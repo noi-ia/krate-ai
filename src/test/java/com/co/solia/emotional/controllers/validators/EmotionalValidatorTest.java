@@ -1,7 +1,8 @@
 package com.co.solia.emotional.controllers.validators;
 
 
-import com.co.solia.emotional.models.exceptions.BadRequestException;
+import com.co.solia.emotional.emotional.controllers.validators.EmotionalValidator;
+import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

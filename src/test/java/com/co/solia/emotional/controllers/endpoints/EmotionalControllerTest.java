@@ -1,11 +1,12 @@
 package com.co.solia.emotional.controllers.endpoints;
 
-import com.co.solia.emotional.models.dtos.EmotionalMessageRqDto;
-import com.co.solia.emotional.models.dtos.EmotionalMessageRsDto;
-import com.co.solia.emotional.models.dtos.EmotionsDto;
-import com.co.solia.emotional.models.exceptions.BadRequestException;
-import com.co.solia.emotional.models.exceptions.InternalServerException;
-import com.co.solia.emotional.services.impl.EmotionalServiceImpl;
+import com.co.solia.emotional.emotional.controllers.endpoints.EmotionalController;
+import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRqDto;
+import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRsDto;
+import com.co.solia.emotional.emotional.models.dtos.EmotionsDto;
+import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
+import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
+import com.co.solia.emotional.emotional.services.impl.EmotionalServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
