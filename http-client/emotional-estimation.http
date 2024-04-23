@@ -1,1 +1,10 @@
 GET localhost:8080/V1/emotional/249856f2-0c35-437e-8598-b99def3852fe
+
+
+### TEST 1
+POST localhost:8080/V1/emotional/
+Content-Type: application/json
+
+{
+  "message": "Hoy fue un dia con mucho por hacer, logré muchas cosas y me la pase super bien, estoy contento con los resultados"
+}
