@@ -27,22 +27,26 @@ public class BasicUtils {
             resultValue = System.getenv(envVariable);
         } catch (final Exception e){
             log.error("[getEnvVariable]: Error getting the variable: {}: error: {}", envVariable, e.getMessage());
-            throw new InternalServerException("Error getting the variable", "SystemConfigs");
+            throw InternalServerException.builder().message("Error getting the variable").endpoint("SystemConfigs").build();
         }
-        validateEnvVar(resultValue);
+        validateEnvVar(resultValue, envVariable);
         return resultValue;
     }
 
     /**
      * Validate the value of the environment variable it was got ok.
-     * @param envVariable to validate.
+     * @param valEnvVar value to validate.
+     * @param nameEnvVar name of the environment variable.
      * @throws InternalServerException if validation fails.
      */
-    private static void validateEnvVar(final String envVariable){
-        Stream.of(envVariable)
+    private static void validateEnvVar(final String valEnvVar, final String nameEnvVar){
+        Stream.of(valEnvVar)
                 .filter(BasicValidator::isValidString)
                 .findFirst()
-                .ifPresentOrElse(enVar -> log.info("[getEnvVariable]: getting successfully the variable")
-                ,() -> {throw new InternalServerException("Error getting the variable", "SystemConfigs");});
+                .ifPresentOrElse(enVar -> log.info("[getEnvVariable]: getting successfully the variable: {}", nameEnvVar)
+                ,() -> {
+                    log.error("[validateEnvVar]: Error getting the variable: {}", nameEnvVar);
+                    throw InternalServerException.builder().message("Error getting the variable").endpoint("SystemConfigs").build();
+                });
     }
 }

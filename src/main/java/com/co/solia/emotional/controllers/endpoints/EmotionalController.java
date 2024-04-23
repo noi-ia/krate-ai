@@ -1,5 +1,6 @@
 package com.co.solia.emotional.controllers.endpoints;
 
+import com.co.solia.emotional.controllers.docs.EmotionalControllerDocs;
 import com.co.solia.emotional.controllers.validators.EmotionalValidator;
 import com.co.solia.emotional.models.dtos.EmotionalMessageRqDto;
 import com.co.solia.emotional.models.dtos.EmotionalMessageRsDto;
@@ -18,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 /**
- * version 1 of emotional endpoints.
+ * version 1 of emotional endpoints, implementation of the endpoints for documentation.
  *
  * @author luis.bolivar
  */
 @RestController
 @RequestMapping("/V1/emotional")
 @AllArgsConstructor
-public class EmotionalController {
+public class EmotionalController implements EmotionalControllerDocs {
 
     /**
      * {@link EmotionalService} to use emotional behaviours.
@@ -42,8 +43,9 @@ public class EmotionalController {
         EmotionalValidator.validateMessage(emotionalMessage.getMessage());
         return emotionalService.estimate(emotionalMessage)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new InternalServerException("The estimation process failed, try again.",
-                        "/emotional/"));
+                .orElseThrow(() -> InternalServerException.builder()
+                        .message("The estimation process failed, try again.")
+                        .endpoint("/emotional/").build());
     }
 
     /**
@@ -53,8 +55,12 @@ public class EmotionalController {
      */
     @GetMapping("/{idEE}")
     public ResponseEntity<EmotionalMessageRsDto> getById(@PathVariable("idEE") final UUID idEE) {
+        EmotionalValidator.validateIdEe(idEE);
         return emotionalService.getById(idEE)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new InternalServerException("Error getting emotional estimation by id", "/emotional/{id}"));
+                .orElseThrow(() -> InternalServerException.builder()
+                        .message("Error getting emotional estimation by id")
+                        .endpoint("/emotional/{id}")
+                        .build());
     }
 }

@@ -24,4 +24,9 @@ public class InternalServerException extends RuntimeException{
      * endpoint where was thrown the exception.
      */
     private String endpoint;
+
+    /**
+     * cause of the exception.
+     */
+    private Throwable cause;
 }

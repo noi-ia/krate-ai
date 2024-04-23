@@ -6,6 +6,8 @@ import com.co.solia.emotional.utils.BasicValidator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
@@ -33,6 +35,24 @@ public class EmotionalValidator {
                             throw BadRequestException.builder()
                                     .message("the message to process is invalid.")
                                     .endpoint("/emotional/")
+                                    .build();
+                        });
+    }
+
+    /**
+     * validate the id of emotional estimation.
+     * @param idEE estimation id.
+     */
+    public static void validateIdEe(final UUID idEE){
+        Stream.of(idEE)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .ifPresentOrElse(id -> log.info("[validateIdEe]: id of emotional estimation format is ok")
+                        , () -> {
+                            log.error("[validateIdEe]: the id of emotional estimation is invalid.");
+                            throw BadRequestException.builder()
+                                    .message("the id to process is invalid.")
+                                    .endpoint("/emotional/{id}")
                                     .build();
                         });
     }

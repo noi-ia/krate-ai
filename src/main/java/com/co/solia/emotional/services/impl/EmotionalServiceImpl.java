@@ -53,7 +53,7 @@ public class EmotionalServiceImpl implements EmotionalService {
             final UUID idEE = UUID.randomUUID();
             final EmotionalEstimationDao ee = getAndSaveEE(emotionalMessage.getMessage(), resultEE, userId, idEE, duration);
             return Optional.of(EmotionalEstimationMapper.fromDaoToRsDto(ee));
-        }).orElseThrow(() -> new InternalServerException("Could not call to openai.", "/emotional/"));
+        }).orElseThrow(() -> InternalServerException.builder().message("Could not call to openai.").endpoint("/emotional/").build());
     }
 
     /**
