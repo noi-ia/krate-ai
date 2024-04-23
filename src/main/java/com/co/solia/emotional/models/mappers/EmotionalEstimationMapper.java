@@ -8,7 +8,10 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * utility class to map a multiple emotional estimations models.
@@ -34,22 +37,47 @@ public class EmotionalEstimationMapper {
      * @param idBEE    batch id.
      * @return {@link EmotionalEstimationDao}.
      */
-    public static EmotionalEstimationDao fromChatCompletionToDao(
+    public static Optional<EmotionalEstimationDao> fromChatCompletionToDao(
             final String message,
             final ChatCompletion resultEE,
             final UUID userId,
             final long duration,
             final UUID idBEE,
             final UUID idEE) {
+        return Stream.of(resultEE)
+                        .filter(Objects::nonNull)
+                                .filter(result -> result.choices() != null)
+                                        .filter(result -> !result.choices().isEmpty())
+                                                .findFirst()
+                                                        .map(result -> buildEEDao(message, userId, duration, idBEE, idEE, result));
+    }
+
+    /**
+     * build a {@link EmotionalEstimationDao}.
+     * @param message the message was processed.
+     * @param userId user identifier.
+     * @param duration duration of processing.
+     * @param idBEE id bash process.
+     * @param idEE emotional estimation identifier.
+     * @param result from openai.
+     * @return {@link EmotionalEstimationDao}.
+     */
+    private static EmotionalEstimationDao buildEEDao(
+            final String message,
+            final UUID userId,
+            final long duration,
+            final UUID idBEE,
+            final UUID idEE,
+            final ChatCompletion result) {
         return EmotionalEstimationDao.builder()
                 .message(message)
                 .idEE(idEE)
                 .idBEE(idBEE)
                 .idUser(userId)
-                .openAiId(resultEE.id())
-                .fingerPrintOpenai(resultEE.systemFingerprint())
-                .tokens(resultEE.usage().promptTokens() - PROMPT_TOKEN_SIZE)
-                .estimates(resultEE.choices().getFirst().message().content())
+                .openAiId(result.id())
+                .fingerPrintOpenai(result.systemFingerprint())
+                .tokens(result.usage().promptTokens() - PROMPT_TOKEN_SIZE)
+                .estimates(result.choices().getFirst().message().content())
                 .duration(duration)
                 .build();
     }
@@ -59,11 +87,18 @@ public class EmotionalEstimationMapper {
      * @param dao from dao.
      * @return {@link EmotionalMessageRsDto}.
      */
-    public static EmotionalMessageRsDto fromDaoToRsDto(final EmotionalEstimationDao dao) {
-        return EmotionalMessageRsDto.builder()
-                .eeId(dao.getIdEE())
-                .emotions(getEmotionsFromDao(dao))
-                .build();
+    public static Optional<EmotionalMessageRsDto> fromDaoToRsDto(final EmotionalEstimationDao dao) {
+        return Stream.of(dao)
+                        .filter(Objects::nonNull)
+                                .filter(d -> d.getIdEE() != null)
+                                        .filter(d -> d.getEstimates() != null)
+                .filter(d -> !d.getEstimates().isEmpty())
+                .filter(d -> !d.getEstimates().isBlank())
+                        .findFirst()
+                                .map(d -> EmotionalMessageRsDto.builder()
+                                        .eeId(dao.getIdEE())
+                                        .emotions(getEmotionsFromDao(dao))
+                                        .build());
     }
 
     /**

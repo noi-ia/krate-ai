@@ -24,9 +24,8 @@ public class EmotionalValidator {
      * @param message to validate.
      */
     public static void validateMessage(final String message) {
-        final Boolean isValidMessage = BasicValidator.isValidString(message);
-        Stream.of(isValidMessage)
-                .filter(Boolean.TRUE::equals)
+        Stream.of(message)
+                .filter(BasicValidator::isValidString)
                 .findFirst()
                 .ifPresentOrElse(validMessage ->
                     log.info("[validateMessage]: message is valid to process.")

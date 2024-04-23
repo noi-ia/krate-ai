@@ -51,8 +51,8 @@ public class EmotionalServiceImpl implements EmotionalService {
         return openAIService.emotionalEstimation(emotionalMessage.getMessage()).map(resultEE -> {
             final long duration = getDuration(start.toEpochMilli(), Instant.now().toEpochMilli());
             final UUID idEE = UUID.randomUUID();
-            final EmotionalEstimationDao ee = getAndSaveEE(emotionalMessage.getMessage(), resultEE, userId, idEE, duration);
-            return Optional.of(EmotionalEstimationMapper.fromDaoToRsDto(ee));
+            return mapAndSaveEE(emotionalMessage.getMessage(), resultEE, userId, idEE, duration)
+                    .flatMap(EmotionalEstimationMapper::fromDaoToRsDto);
         }).orElseThrow(() -> InternalServerException.builder().message("Could not call to openai.").endpoint("/emotional/").build());
     }
 
@@ -75,16 +75,18 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @param duration of openai processing.
      * @return {@link EmotionalEstimationDao}.
      */
-    private EmotionalEstimationDao getAndSaveEE(
+    private Optional<EmotionalEstimationDao> mapAndSaveEE(
             final String message,
             final ChatCompletion resultEE,
             final UUID userId,
             final UUID idEE,
             final long duration) {
-        EmotionalEstimationDao ee = EmotionalEstimationMapper
-                .fromChatCompletionToDao(message, resultEE, userId, duration, null, idEE);
-        save(ee);
-        return ee;
+        return EmotionalEstimationMapper
+                .fromChatCompletionToDao(message, resultEE, userId, duration, null, idEE)
+                .map(result -> {
+                    save(result);
+                    return result;
+                });
     }
 
 
@@ -112,7 +114,8 @@ public class EmotionalServiceImpl implements EmotionalService {
         Optional<EmotionalMessageRsDto> result = Optional.empty();
 
         try {
-            result = emotionalEstimationRepos.findById(id).map(EmotionalEstimationMapper::fromDaoToRsDto);
+            result = emotionalEstimationRepos.findById(id)
+                    .flatMap(EmotionalEstimationMapper::fromDaoToRsDto);
         } catch (Exception e) {
             log.error("[getById]: Error getting emotional estimation by id: {}, {}", id, e.getMessage());
         }
