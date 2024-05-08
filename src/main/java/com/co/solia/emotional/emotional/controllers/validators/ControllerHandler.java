@@ -4,6 +4,7 @@ package com.co.solia.emotional.emotional.controllers.validators;
 import com.co.solia.emotional.emotional.models.dtos.DefaultRsDto;
 import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
 import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
+import com.co.solia.emotional.emotional.models.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class ControllerHandler {
      * @param ise {@link InternalServerException} to catch.
      * @return {@link ExceptionHandler} for {@link DefaultRsDto}.
      */
-    @ExceptionHandler(value = InternalServerException.class)
+    @ExceptionHandler(value = {InternalServerException.class, Exception.class})
     public ResponseEntity<DefaultRsDto> internalException(final InternalServerException ise) {
         log.error("[internalException]: Error catching: message: {}, endpoint: {}", ise.getMessage(), ise.getEndpoint());
         logError(ise);
@@ -43,8 +44,21 @@ public class ControllerHandler {
     public ResponseEntity<DefaultRsDto> badRequestException(final BadRequestException bre) {
         log.error("[badRequestException]: Error catching: message: {}, endpoint: {}", bre.getMessage(), bre.getEndpoint());
         logError(bre);
-        return ResponseEntity.status(HttpStatusCode.valueOf(404))
+        return ResponseEntity.status(HttpStatusCode.valueOf(400))
                 .body(DefaultRsDto.builder().message(bre.getMessage()).endpoint(bre.getEndpoint()).build());
+    }
+
+    /**
+     * {@link ExceptionHandler} for {@link NotFoundException}.
+     * @param nfe {@link NotFoundException} to catch.
+     * @return {@link ExceptionHandler} for {@link NotFoundException}.
+     */
+    @ExceptionHandler(value = NotFoundException.class)
+    public ResponseEntity<DefaultRsDto> NotFoundException(final NotFoundException nfe) {
+        log.error("[NotFoundException]: Error catching: message: {}, endpoint: {}", nfe.getMessage(), nfe.getEndpoint());
+        logError(nfe);
+        return ResponseEntity.status(HttpStatusCode.valueOf(404))
+                .body(DefaultRsDto.builder().message(nfe.getMessage()).endpoint(nfe.getEndpoint()).build());
     }
 
     /**

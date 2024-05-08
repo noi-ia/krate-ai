@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -24,7 +25,12 @@ public class EmotionalMessageRsDto {
     private UUID eeId;
 
     /**
+     * message processed.
+     */
+    private String message;
+
+    /**
      * emotions related to estimation.
      */
-    private EmotionsDto emotions;
+    private Map<String, Double> emotions;
 }

@@ -43,8 +43,8 @@ public class BasicUtils {
         Stream.of(valEnvVar)
                 .filter(BasicValidator::isValidString)
                 .findFirst()
-                .ifPresentOrElse(enVar -> log.info("[getEnvVariable]: getting successfully the variable: {}", nameEnvVar)
-                ,() -> {
+                .orElseGet(
+                () -> {
                     log.error("[validateEnvVar]: Error getting the variable: {}", nameEnvVar);
                     throw InternalServerException.builder().message("Error getting the variable").endpoint("SystemConfigs").build();
                 });

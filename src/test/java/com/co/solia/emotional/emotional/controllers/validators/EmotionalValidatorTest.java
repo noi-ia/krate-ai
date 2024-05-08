@@ -1,4 +1,4 @@
-package com.co.solia.emotional.controllers.validators;
+package com.co.solia.emotional.emotional.controllers.validators;
 
 
 import com.co.solia.emotional.emotional.controllers.validators.EmotionalValidator;

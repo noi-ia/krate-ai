@@ -4,7 +4,10 @@ import com.co.solia.emotional.emotional.controllers.docs.EmotionalControllerDocs
 import com.co.solia.emotional.emotional.controllers.validators.EmotionalValidator;
 import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRqDto;
 import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRsDto;
+import com.co.solia.emotional.emotional.models.dtos.EmotionalMessagesRqDto;
+import com.co.solia.emotional.emotional.models.dtos.EmotionalMessagesRsDto;
 import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
+import com.co.solia.emotional.emotional.models.exceptions.NotFoundException;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,15 +38,30 @@ public class EmotionalController implements EmotionalControllerDocs {
     /**
      * process the message in emotional estimation.
      * @param emotionalMessage message to process.
-     * @return {@link ResponseEntity} of.
+     * @return {@link ResponseEntity} of {@link EmotionalMessageRsDto}.
      */
-    @PostMapping("/")
-    public ResponseEntity<EmotionalMessageRsDto> estimate(@RequestBody final EmotionalMessageRqDto emotionalMessage) {
+    @PostMapping("/compute/")
+    public ResponseEntity<EmotionalMessageRsDto> compute(@RequestBody final EmotionalMessageRqDto emotionalMessage) {
         EmotionalValidator.validateMessage(emotionalMessage.getMessage());
-        return emotionalService.estimate(emotionalMessage)
+        return emotionalService.compute(emotionalMessage)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
-                        .message("The estimation process failed, try again.")
+                        .message("The compute process failed, try again.")
+                        .endpoint("/emotional/").build());
+    }
+
+    /**
+     * process a list of messages in emotional estimation.
+     * @param messages to process.
+     * @return {@link ResponseEntity} of {@link EmotionalMessagesRsDto}.
+     */
+    @PostMapping("/compute/batch/")
+    public ResponseEntity<EmotionalMessagesRsDto> computeList(@RequestBody final EmotionalMessagesRqDto messages) {
+        EmotionalValidator.validateMessages(messages.getMessages());
+        return emotionalService.computeList(messages)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> InternalServerException.builder()
+                        .message("The compute process failed, try again.")
                         .endpoint("/emotional/").build());
     }
 
@@ -58,8 +76,24 @@ public class EmotionalController implements EmotionalControllerDocs {
         return emotionalService.getById(idEE)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
-                        .message("Error getting emotional estimation by id")
-                        .endpoint("/emotional/{id}")
+                        .message("Error getting emotional compute by id")
+                        .endpoint("/emotional/{idEE}")
+                        .build());
+    }
+
+    /**
+     * get the messages processed by batch emotional compute id.
+     * @param idBEE batch emotional estimation id.
+     * @return {@link ResponseEntity} of {@link EmotionalMessagesRsDto}.
+     */
+    @GetMapping("/batch/{idBEE}")
+    public ResponseEntity<EmotionalMessagesRsDto> getByBatchECId(@PathVariable("idBEE") final UUID idBEE){
+        EmotionalValidator.validateIdEe(idBEE);
+        return emotionalService.getECByBatchId(idBEE)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .message("Error getting emotional compute by batch id")
+                        .endpoint("/emotional/{idBEE}")
                         .build());
     }
 }

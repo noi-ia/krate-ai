@@ -1,9 +1,7 @@
-package com.co.solia.emotional.controllers.endpoints;
+package com.co.solia.emotional.emotional.controllers.endpoints;
 
-import com.co.solia.emotional.emotional.controllers.endpoints.EmotionalController;
 import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRqDto;
 import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRsDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionsDto;
 import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
 import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
 import com.co.solia.emotional.emotional.services.impl.EmotionalServiceImpl;
@@ -16,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,7 +42,7 @@ public class EmotionalControllerTest {
      * happy path.
      */
     @Test
-    void givenAMessageWhenEstimateThenEstimateOk(){
+    void givenAMessageWhenEstimateThenComputeOk(){
         final String message = "I'm so happy";
         final UUID idEe = UUID.randomUUID();
         final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
@@ -52,16 +51,16 @@ public class EmotionalControllerTest {
 
         final EmotionalMessageRsDto expected = EmotionalMessageRsDto.builder()
                 .eeId(idEe)
-                .emotions(EmotionsDto.builder().build())
+                .emotions(Map.of("Amor", 1.0))
                 .build();
 
-        Mockito.when(emotionalService.estimate(Mockito.any()))
+        Mockito.when(emotionalService.compute(Mockito.any()))
                 .thenReturn(Optional.of(expected));
 
-        final ResponseEntity<EmotionalMessageRsDto> result = emotionalController.estimate(rq);
+        final ResponseEntity<EmotionalMessageRsDto> result = emotionalController.compute(rq);
 
         Mockito.verify(emotionalService, Mockito.times(1))
-                .estimate(Mockito.any());
+                .compute(Mockito.any());
         Assertions.assertNotNull(result, "The result is not null.");
         Assertions.assertNotNull(result.getBody(), "The result body is not null.");
         Assertions.assertTrue(result.getStatusCode().is2xxSuccessful(), "Is 2xxSuccessful.");
@@ -75,20 +74,20 @@ public class EmotionalControllerTest {
      * not happy path.
      */
     @Test
-    void givenAMessageWhenEstimateThenEstimateNok(){
+    void givenAMessageWhenEstimateThenComputeNok(){
         final String message = "I'm so happy";
         final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
                 .message(message)
                 .build();
 
-        Mockito.when(emotionalService.estimate(Mockito.any()))
+        Mockito.when(emotionalService.compute(Mockito.any()))
                 .thenReturn(Optional.empty());
 
         final InternalServerException ise = Assertions.assertThrows(InternalServerException.class,
-                () -> emotionalController.estimate(rq));
+                () -> emotionalController.compute(rq));
 
         Mockito.verify(emotionalService, Mockito.times(1))
-                .estimate(Mockito.any());
+                .compute(Mockito.any());
         Assertions.assertNotNull(ise, "The result is not null.");
         Assertions.assertNotNull(ise.getMessage(), "The result body is not null.");
         Assertions.assertNotNull(ise.getEndpoint(), "Is not null.");
@@ -100,17 +99,17 @@ public class EmotionalControllerTest {
      * not happy path, with message null.
      */
     @Test
-    void givenAMessageNullWhenEstimateThenEstimateNok(){
+    void givenAMessageNullWhenEstimateThenComputeNok(){
         final String message = null; // message null.
         final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
                 .message(message)
                 .build();
 
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> emotionalController.estimate(rq));
+                () -> emotionalController.compute(rq));
 
         Mockito.verify(emotionalService, Mockito.times(0))
-                .estimate(Mockito.any());
+                .compute(Mockito.any());
         Assertions.assertNotNull(bre, "The result is not null.");
         Assertions.assertNotNull(bre.getMessage(), "The result body is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "Is not null.");
@@ -122,17 +121,17 @@ public class EmotionalControllerTest {
      * not happy path, with message empty.
      */
     @Test
-    void givenAMessageEmptyWhenEstimateThenEstimateNok(){
+    void givenAMessageEmptyWhenEstimateThenComputeNok(){
         final String message = ""; // message empty.
         final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
                 .message(message)
                 .build();
 
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> emotionalController.estimate(rq));
+                () -> emotionalController.compute(rq));
 
         Mockito.verify(emotionalService, Mockito.times(0))
-                .estimate(Mockito.any());
+                .compute(Mockito.any());
         Assertions.assertNotNull(bre, "The result is not null.");
         Assertions.assertNotNull(bre.getMessage(), "The result body is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "Is not null.");
@@ -144,17 +143,17 @@ public class EmotionalControllerTest {
      * not happy path, with message blank.
      */
     @Test
-    void givenAMessageBlankWhenEstimateThenEstimateNok(){
+    void givenAMessageBlankWhenEstimateThenComputeNok(){
         final String message = "     "; // message blank.
         final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
                 .message(message)
                 .build();
 
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> emotionalController.estimate(rq));
+                () -> emotionalController.compute(rq));
 
         Mockito.verify(emotionalService, Mockito.times(0))
-                .estimate(Mockito.any());
+                .compute(Mockito.any());
         Assertions.assertNotNull(bre, "The result is not null.");
         Assertions.assertNotNull(bre.getMessage(), "The result body is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "Is not null.");
@@ -171,7 +170,7 @@ public class EmotionalControllerTest {
 
         final EmotionalMessageRsDto expected = EmotionalMessageRsDto.builder()
                 .eeId(eeId)
-                .emotions(EmotionsDto.builder().build())
+                .emotions(Map.of("Amor", 1.0))
                 .build();
 
         Mockito.when(emotionalService.getById(Mockito.any()))

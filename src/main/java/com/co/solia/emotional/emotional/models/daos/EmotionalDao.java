@@ -17,10 +17,10 @@ import java.util.UUID;
  */
 @Builder
 @Getter
-@Document("emotionalEstimation")
+@Document("emotional")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmotionalEstimationDao {
+public class EmotionalDao {
 
     /**
      * id of emotional estimation.
@@ -29,14 +29,14 @@ public class EmotionalEstimationDao {
     private UUID idEE;
 
     /**
-     * id of batch emotional estimation.
-     */
-    private UUID idBEE;
-
-    /**
      * user identifier that start emotional estimation.
      */
     private UUID idUser;
+
+    /**
+     * id of batch emotional estimation.
+     */
+    private UUID idBatch;
 
     /**
      * message associated to the emotional estimation.

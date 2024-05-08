@@ -1,10 +1,28 @@
-GET localhost:8080/V1/emotional/249856f2-0c35-437e-8598-b99def3852fe
-
-
-### TEST 1
-POST localhost:8080/V1/emotional/
+### compute a message.
+POST localhost:8080/V1/emotional/compute/
 Content-Type: application/json
 
 {
   "message": "Hoy fue un dia con mucho por hacer, logré muchas cosas y me la pase super bien, estoy contento con los resultados"
 }
+
+### get message processed by id emotional estimation.
+GET localhost:8080/V1/emotional/98ac2ee9-37b1-444a-b20e-941fabf8b61a
+
+
+### compute a list
+POST localhost:8080/V1/emotional/compute/batch/
+Content-Type: application/json
+
+{
+  "messages": [
+    "adicional: ¿Cuál es tu percepción y/o experiencia con los sustitutos de comida?",
+    "No estoy seguro de qué son",
+    "es buenísimo de sabor y si lo combinas con ejercicios, seguro que te funciona mucho más",
+    "No sé si tiene efectividad",
+    "no los sustituyo, complemento"
+  ]
+}
+
+### get all message processed by batch id.
+GET localhost:8080/V1/emotional/batch/217fb220-3d75-4b9f-a12e-2a6e45ce6227
