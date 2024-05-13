@@ -1,5 +1,5 @@
 ### compute a message.
-POST localhost:8080/V1/emotional/compute/
+POST localhost:8080/1/emotional/compute/
 Content-Type: application/json
 
 {
@@ -7,11 +7,11 @@ Content-Type: application/json
 }
 
 ### get message processed by id emotional estimation.
-GET localhost:8080/V1/emotional/98ac2ee9-37b1-444a-b20e-941fabf8b61a
+GET localhost:8080/1/emotional/98ac2ee9-37b1-444a-b20e-941fabf8b61a
 
 
 ### compute a list
-POST localhost:8080/V1/emotional/compute/batch/
+POST localhost:8080/1/emotional/compute/batch/
 Content-Type: application/json
 
 {
@@ -25,4 +25,17 @@ Content-Type: application/json
 }
 
 ### get all message processed by batch id.
-GET localhost:8080/V1/emotional/batch/217fb220-3d75-4b9f-a12e-2a6e45ce6227
+GET localhost:8080/1/emotional/batch/217fb220-3d75-4b9f-a12e-2a6e45ce6227
+
+### create a emotional unique comput
+POST localhost:8080/1/emotional/compute/unique/
+Content-Type: application/json
+
+{
+  "messages": [
+    "No estoy seguro de qué son",
+    "es buenísimo de sabor y si lo combinas con ejercicios, seguro que te funciona mucho más",
+    "No sé si tiene efectividad",
+    "no los sustituyo, complemento"
+  ]
+}

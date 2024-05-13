@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.dtos;
+package com.co.solia.emotional.emotional.models.dtos.rs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Builder
-public class EmotionalMessagesRsDto {
+public class EmotionalBatchRsDto {
 
     /**
      * id of emotional estimation batch process.
@@ -27,5 +27,5 @@ public class EmotionalMessagesRsDto {
     /**
      * results from emotional processing.
      */
-    private List<EmotionalMessageRsDto> results;
+    private List<EmotionalRsDto> results;
 }

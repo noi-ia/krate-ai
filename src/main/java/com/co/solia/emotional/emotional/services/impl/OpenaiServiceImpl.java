@@ -1,7 +1,6 @@
 package com.co.solia.emotional.emotional.services.impl;
 
 import com.co.solia.emotional.emotional.services.services.OpenAIService;
-import com.co.solia.emotional.emotional.utils.BasicUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest;
@@ -9,6 +8,8 @@ import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.Role;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,15 +32,65 @@ import java.util.stream.Stream;
 @Service
 public class OpenaiServiceImpl implements OpenAIService {
 
+    private final String OPENAI_APIKEY;
+
+    private final String PROMPT_EMOTIONAL;
+
+    private final String PROMPT_EMOTIONAL_UNIQUE;
+
+    private final String OPENAI_MODEL;
+
+    @Autowired
+    public OpenaiServiceImpl(
+            @Value("${solia.emotional.openai.apikey}") final String openaiApikey,
+            @Value("${solia.emotional.openai.prompt.emotional}") final String promptEmotional,
+            @Value("${solia.emotional.openai.prompt.emotional.unique}") final String promptEmotionalUnique,
+            @Value("${solia.emotional.openai.model}") final String openaiModel){
+        this.OPENAI_APIKEY = openaiApikey;
+        this.PROMPT_EMOTIONAL = promptEmotional;
+        this.PROMPT_EMOTIONAL_UNIQUE = promptEmotionalUnique;
+        this.OPENAI_MODEL = openaiModel;
+    }
+
+
     /**
      * {@inheritDoc}
      * @param message to estimate.
      * @return
      */
     @Override
-    public Optional<ChatCompletion> emotionalEstimation(String message) {
-        log.info("[emotionalEstimation]: Starting emotional estimation.");
+    public Optional<ChatCompletion> emotionalCompute(final String message) {
+        log.info("[emotionalEstimation]: starting emotional compute.");
         return callOpenAiEE(message);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @param messages to process.
+     * @return
+     */
+    @Override
+    public Optional<ChatCompletion> emotionalComputeUnique(final List<String> messages) {
+        log.info("[emotionalComputeUnique]: starting unique emotional compute: {}", messages.size());
+        return callOpenAiEEU(messages);
+    }
+
+    /**
+     * call to OpenAI api.
+     * @param messages to estimate.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
+    private Optional<ChatCompletion> callOpenAiEEU(final List<String> messages) {
+        Optional<ChatCompletion> result = Optional.empty();
+        try {
+            final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
+                    .chatCompletionEntity(getEmotionalUniqueChatRequest(messages.toString()));
+            result = mapResult(response);
+        } catch (Exception e) {
+            log.error("[callOpenAiEEU]: Error getting response from OpenAI: {}", e.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -50,8 +101,8 @@ public class OpenaiServiceImpl implements OpenAIService {
     private Optional<ChatCompletion> callOpenAiEE(final String message) {
         Optional<ChatCompletion> result = Optional.empty();
         try {
-            final OpenAiApi openAiApi = getOpenAiInstance();
-            final ResponseEntity<ChatCompletion> response = openAiApi.chatCompletionEntity(getChatRequest(message));
+            final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
+                    .chatCompletionEntity(getEmotionalChatRequest(message));
             result = mapResult(response);
         } catch (Exception e) {
             log.error("[callOpenAiEE]: Error getting response from OpenAI: {}", e.getMessage());
@@ -64,8 +115,8 @@ public class OpenaiServiceImpl implements OpenAIService {
      * get the OpenApi instance.
      * @return {@link OpenAiApi}
      */
-    private static OpenAiApi getOpenAiInstance() {
-        return new OpenAiApi(BasicUtils.getEnvVariable("OPENAI_APIKEY"));
+    private OpenAiApi getOpenAiInstance() {
+        return new OpenAiApi(OPENAI_APIKEY);
     }
 
     /**
@@ -83,15 +134,27 @@ public class OpenaiServiceImpl implements OpenAIService {
     }
 
     /**
-     * method to create the request to emotional estimation.
+     * method to create the request to emotional-compute.
+     * @param message from the user to get the emotional compute.
+     * @return {@link ChatCompletionRequest}
+     */
+    private ChatCompletionRequest getEmotionalChatRequest(final String message) {
+        final String model = getModel();
+        final Float temperature = 0.0f;
+        final ResponseFormat responseFormat = new ResponseFormat("json_object");
+        return getEmotionalChatRequest(getEmotionalMessages(message), model, temperature, responseFormat);
+    }
+
+    /**
+     * method to create the request to emotional unique compute.
      * @param message from the user to get the emotional estimation.
      * @return {@link ChatCompletionRequest}
      */
-    private static ChatCompletionRequest getChatRequest(final String message) {
-        final String model = "gpt-3.5-turbo-0125";
+    private ChatCompletionRequest getEmotionalUniqueChatRequest(final String message) {
+        final String model = getModel();
         final Float temperature = 0.0f;
         final ResponseFormat responseFormat = new ResponseFormat("json_object");
-        return getChatRequest(getMessages(message), model, temperature, responseFormat);
+        return getEmotionalChatRequest(getEmotionalUniqueMessages(message), model, temperature, responseFormat);
     }
 
 
@@ -103,11 +166,11 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param responseFormat format of the response.
      * @return {@link ChatCompletionRequest}
      */
-    private static ChatCompletionRequest getChatRequest(final List<ChatCompletionMessage> messages,
-                                                        final String model,
-                                                        final Float temperature,
-                                                        final ResponseFormat responseFormat){
-        return getChatRequest(messages, model,
+    private static ChatCompletionRequest getEmotionalChatRequest(final List<ChatCompletionMessage> messages,
+                                                                 final String model,
+                                                                 final Float temperature,
+                                                                 final ResponseFormat responseFormat){
+        return getEmotionalChatRequest(messages, model,
                 null, null, null, 1, null, responseFormat,
                 null, null, Boolean.FALSE, temperature, null, null, null, null);
     }
@@ -132,7 +195,7 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param user to map a user.
      * @return {@link ChatCompletionRequest}.
      */
-    public static ChatCompletionRequest getChatRequest(
+    public static ChatCompletionRequest getEmotionalChatRequest(
             final List<ChatCompletionMessage> messages,
             final String model,
             final Float frequencyPenalty,
@@ -173,12 +236,28 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param message to create as user message.
      * @return {@link List} of {@link ChatCompletionMessage}.
      */
-    private static List<ChatCompletionMessage> getMessages(final String message){
+    private List<ChatCompletionMessage> getEmotionalMessages(final String message){
         List<ChatCompletionMessage> messages = new ArrayList<>();
         try {
-            messages = List.of(getSystemMessage(), getUserMessage(message));
+            messages = List.of(getSysMessEmotional(), getUserMessage(message));
         } catch (Exception e) {
-            log.error("[getMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
+            log.error("[getEmotionalMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
+        }
+
+        return messages;
+    }
+
+    /**
+     * method to get the message from emotional unique to send to openai.
+     * @param message to create as user message.
+     * @return {@link List} of {@link ChatCompletionMessage}.
+     */
+    private List<ChatCompletionMessage> getEmotionalUniqueMessages(final String message){
+        List<ChatCompletionMessage> messages = new ArrayList<>();
+        try {
+            messages = List.of(getSysMessEmotionalUnique(), getUserMessage(message));
+        } catch (Exception e) {
+            log.error("[getEmotionalUniqueMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
         }
 
         return messages;
@@ -194,11 +273,27 @@ public class OpenaiServiceImpl implements OpenAIService {
     }
 
     /**
-     * method to get the system message in {@link ChatCompletionMessage} format.
-     * @return {@link ChatCompletionMessage}
+     * method to get the system message in {@link ChatCompletionMessage} format to emotional compute.
+     * @return {@link ChatCompletionMessage}.
      */
-    private static ChatCompletionMessage getSystemMessage(){
-        return new ChatCompletionMessage(BasicUtils.getEnvVariable("OPENAI_PROMPT"), Role.SYSTEM);
+    private ChatCompletionMessage getSysMessEmotional(){
+        return new ChatCompletionMessage(PROMPT_EMOTIONAL, Role.SYSTEM);
+    }
+
+    /**
+     * method to get the system message in {@link ChatCompletionMessage} format to emotional unique compute.
+     * @return {@link ChatCompletionMessage}.
+     */
+    private ChatCompletionMessage getSysMessEmotionalUnique(){
+        return new ChatCompletionMessage(PROMPT_EMOTIONAL_UNIQUE, Role.SYSTEM);
+    }
+
+    /**
+     * decouple method to get the openai model.
+     * @return {@link String} with model name.
+     */
+    private String getModel(){
+        return OPENAI_MODEL;
     }
 
 }

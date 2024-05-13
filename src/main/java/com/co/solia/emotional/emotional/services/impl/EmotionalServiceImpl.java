@@ -2,21 +2,25 @@ package com.co.solia.emotional.emotional.services.impl;
 
 import com.co.solia.emotional.emotional.models.daos.EmotionalBatchDao;
 import com.co.solia.emotional.emotional.models.daos.EmotionalDao;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRqDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRsDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessagesRqDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessagesRsDto;
+import com.co.solia.emotional.emotional.models.daos.EmotionalUniqueDao;
+import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalRqDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
+import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalBatchRqDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
 import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
 import com.co.solia.emotional.emotional.models.exceptions.NotFoundException;
 import com.co.solia.emotional.emotional.models.mappers.EmotionalMapper;
 import com.co.solia.emotional.emotional.models.repos.EmotionalBatchRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalRepo;
+import com.co.solia.emotional.emotional.models.repos.EmotionalUniqueRepo;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
 import com.co.solia.emotional.emotional.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,12 +54,17 @@ public class EmotionalServiceImpl implements EmotionalService {
     private EmotionalBatchRepo emotionalBatchRepo;
 
     /**
+     * dependency on {@link EmotionalUniqueRepo} for persistence.
+     */
+    private EmotionalUniqueRepo emotionalUniqueRepo;
+
+    /**
      * {@inheritDoc}
      * @param emotionalMessage message to process
      * @return
      */
     @Override
-    public Optional<EmotionalMessageRsDto> compute(final EmotionalMessageRqDto emotionalMessage) {
+    public Optional<EmotionalRsDto> compute(final EmotionalRqDto emotionalMessage) {
         return estimateMessage(emotionalMessage.getMessage(), UUID.randomUUID(), null);
     }
 
@@ -64,14 +73,14 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @param message to estimate.
      * @param userId user identifier.
      * @param idBee id batch identifier.
-     * @return {@link Optional} of {@link EmotionalMessagesRsDto}.
+     * @return {@link Optional} of {@link EmotionalBatchRsDto}.
      */
-    private Optional<EmotionalMessageRsDto> estimateMessage(
+    private Optional<EmotionalRsDto> estimateMessage(
             final String message,
             final UUID userId,
             final UUID idBee) {
         final Instant start = Instant.now();
-        return openAIService.emotionalEstimation(message).map(resultEE -> {
+        return openAIService.emotionalCompute(message).map(resultEE -> {
             final long duration = getDuration(start.toEpochMilli(), Instant.now().toEpochMilli());
             return mapAndSaveEE(message, resultEE, userId, UUID.randomUUID(), idBee, duration)
                     .flatMap(EmotionalMapper::fromDaoToRsDto);
@@ -84,7 +93,7 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @return
      */
     @Override
-    public Optional<EmotionalMessagesRsDto> computeList(final EmotionalMessagesRqDto messages) {
+    public Optional<EmotionalBatchRsDto> computeList(final EmotionalBatchRqDto messages) {
         final UUID idBee = UUID.randomUUID();
         final UUID userId = UUID.randomUUID();
         return estimateMessageList(messages, userId, idBee)
@@ -96,11 +105,11 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @param messages to estimate.
      * @param userId user identifier.
      * @param idBee id batch emotional estimation.
-     * @return {@link Optional} of {@link List} of {@link EmotionalMessageRsDto}.
+     * @return {@link Optional} of {@link List} of {@link EmotionalRsDto}.
      */
-    private Optional<List<EmotionalMessageRsDto>> estimateMessageList(final EmotionalMessagesRqDto messages, final UUID userId, final UUID idBee) {
+    private Optional<List<EmotionalRsDto>> estimateMessageList(final EmotionalBatchRqDto messages, final UUID userId, final UUID idBee) {
         final long start = Instant.now().toEpochMilli();
-        final List<EmotionalMessageRsDto> ees = computeMessages(messages, userId, idBee);
+        final List<EmotionalRsDto> ees = computeMessages(messages, userId, idBee);
         final long end = Instant.now().toEpochMilli();
         saveBatch(messages.getMessages().size(), userId, idBee, getDuration(start, end));
         return !ees.isEmpty() ? Optional.of(ees) : Optional.empty();
@@ -127,10 +136,10 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @param messages to process.
      * @param userId user identifier.
      * @param idBee batch emotional estimation id.
-     * @return {@link List} of {@link EmotionalMessageRsDto}.
+     * @return {@link List} of {@link EmotionalRsDto}.
      */
-    private List<EmotionalMessageRsDto> computeMessages(final EmotionalMessagesRqDto messages, final UUID userId, final UUID idBee){
-        final List<EmotionalMessageRsDto> ees =  new ArrayList<>(messages.getMessages().size());
+    private List<EmotionalRsDto> computeMessages(final EmotionalBatchRqDto messages, final UUID userId, final UUID idBee){
+        final List<EmotionalRsDto> ees =  new ArrayList<>(messages.getMessages().size());
         messages.getMessages().parallelStream()
                 .forEach(message -> estimateMessage(message, userId, idBee).map(ees::add));
         log.info("[computeMessages] total messages processed: {}", messages.getMessages().size());
@@ -177,6 +186,7 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @param emotionalEstimation to save
      */
     @Override
+    @Transactional
     public void save(EmotionalDao emotionalEstimation) {
         try {
             emotionalRepo.save(emotionalEstimation);
@@ -191,6 +201,7 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @param emotionalBatch to save.
      */
     @Override
+    @Transactional
     public void save(final EmotionalBatchDao emotionalBatch) {
         try{
             emotionalBatchRepo.save(emotionalBatch);
@@ -206,8 +217,8 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @return
      */
     @Override
-    public Optional<EmotionalMessageRsDto> getById(final UUID id) {
-        Optional<EmotionalMessageRsDto> result = Optional.empty();
+    public Optional<EmotionalRsDto> getById(final UUID id) {
+        Optional<EmotionalRsDto> result = Optional.empty();
 
         try {
             result = emotionalRepo.findById(id)
@@ -224,9 +235,9 @@ public class EmotionalServiceImpl implements EmotionalService {
      * @return
      */
     @Override
-    public Optional<EmotionalMessagesRsDto> getECByBatchId(UUID beeId) {
+    public Optional<EmotionalBatchRsDto> getECByBatchId(final UUID beeId) {
         return getEEByBEE(beeId).map(list ->
-            EmotionalMessagesRsDto.builder()
+            EmotionalBatchRsDto.builder()
                     .idBee(beeId)
                     .results(EmotionalMapper.fromDaosGetDtos(list)
                             .orElseThrow(() -> NotFoundException.builder()
@@ -234,6 +245,45 @@ public class EmotionalServiceImpl implements EmotionalService {
                                     .message("Data related to idBEE not found.")
                                     .build()))
                     .build());
+    }
+
+    /**
+     * {@inheritDoc}.
+     * @param emotionalBatch messages to have a unique process.
+     * @return
+     */
+    @Override
+    public Optional<EmotionalUniqueRsDto> computeUnique(final EmotionalBatchRqDto emotionalBatch) {
+        final UUID id = UUID.randomUUID();
+        final UUID userID = UUID.randomUUID();
+        final long start = Instant.now().toEpochMilli();
+        return openAIService.emotionalComputeUnique(emotionalBatch.getMessages()).map(chat -> {
+            final long end = Instant.now().toEpochMilli();
+            mapAndSave(emotionalBatch.getMessages(), chat, id, userID, getDuration(start, end));
+           return EmotionalUniqueRsDto.builder()
+                   .id(id)
+                   .emotions(EmotionalMapper.getEmotionsFromChatCompletion(chat))
+                   .messages(emotionalBatch.getMessages())
+                   .build();
+        });
+    }
+
+    /**
+     * map and save the emotional unique processing.
+     * @param messages to process.
+     * @param chat the result of processing.
+     * @param id emotional unique identifier.
+     * @param userId user identifier.
+     * @param duration of processing.
+     */
+    private void mapAndSave(
+            final List<String> messages,
+            final ChatCompletion chat,
+            final UUID id,
+            final UUID userId,
+            final long duration) {
+        EmotionalMapper.getEUFromChatCompletion(chat, id, userId, messages, duration)
+                .ifPresent(this::save);
     }
 
     /**
@@ -252,6 +302,20 @@ public class EmotionalServiceImpl implements EmotionalService {
         }
 
         return result;
+    }
+
+    /**
+     * {@inheritDoc}.
+     * @param emotionalUnique to save.
+     */
+    @Transactional
+    public void save(final EmotionalUniqueDao emotionalUnique) {
+        try {
+            emotionalUniqueRepo.save(emotionalUnique);
+            log.info("[save]: emotional unique saved ok.");
+        } catch (Exception e) {
+            log.error("[save]: error saving emotional unique processing: {}", e.getMessage());
+        }
     }
 
 }

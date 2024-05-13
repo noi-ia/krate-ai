@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.dtos;
+package com.co.solia.emotional.emotional.models.dtos.rq;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmotionalMessageRqDto {
+public class EmotionalRqDto {
 
     /**
      * message to be processed.

@@ -11,42 +11,37 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * representation of emotional estimation for the db.
+ * Entity to save in db the batch emotional process-
  *
- * @author luis.bolivar.
+ * @author luis.bolivar
  */
 @Builder
 @Getter
-@Document("emotional")
+@Document("emotionalUnique")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmotionalDao {
+public class EmotionalUniqueDao {
 
     /**
-     * id of emotional estimation.
+     * identifier.
      */
     @Id
-    private UUID idEE;
+    private UUID id;
+
+    /**
+     * message processed.
+     */
+    private String messages;
+
+    /**
+     * result of emotional processing.
+     */
+    private String estimations;
 
     /**
      * user identifier that start emotional estimation.
      */
     private UUID idUser;
-
-    /**
-     * id of batch emotional estimation.
-     */
-    private UUID idBatch;
-
-    /**
-     * message associated to the emotional estimation.
-     */
-    private String message;
-
-    /**
-     * result of emotional estimation in json format.
-     */
-    private String estimates;
 
     /**
      * tokens of message representing.
@@ -79,4 +74,5 @@ public class EmotionalDao {
      * system fingerprint from openai result.
      */
     private String fingerPrintOpenai;
+
 }

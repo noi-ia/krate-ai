@@ -1,7 +1,7 @@
 package com.co.solia.emotional.emotional.controllers.endpoints;
 
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRqDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRsDto;
+import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalRqDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
 import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
 import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
 import com.co.solia.emotional.emotional.services.impl.EmotionalServiceImpl;
@@ -45,11 +45,11 @@ public class EmotionalControllerTest {
     void givenAMessageWhenEstimateThenComputeOk(){
         final String message = "I'm so happy";
         final UUID idEe = UUID.randomUUID();
-        final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
+        final EmotionalRqDto rq = EmotionalRqDto.builder()
                 .message(message)
                 .build();
 
-        final EmotionalMessageRsDto expected = EmotionalMessageRsDto.builder()
+        final EmotionalRsDto expected = EmotionalRsDto.builder()
                 .eeId(idEe)
                 .emotions(Map.of("Amor", 1.0))
                 .build();
@@ -57,7 +57,7 @@ public class EmotionalControllerTest {
         Mockito.when(emotionalService.compute(Mockito.any()))
                 .thenReturn(Optional.of(expected));
 
-        final ResponseEntity<EmotionalMessageRsDto> result = emotionalController.compute(rq);
+        final ResponseEntity<EmotionalRsDto> result = emotionalController.compute(rq);
 
         Mockito.verify(emotionalService, Mockito.times(1))
                 .compute(Mockito.any());
@@ -76,7 +76,7 @@ public class EmotionalControllerTest {
     @Test
     void givenAMessageWhenEstimateThenComputeNok(){
         final String message = "I'm so happy";
-        final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
+        final EmotionalRqDto rq = EmotionalRqDto.builder()
                 .message(message)
                 .build();
 
@@ -101,7 +101,7 @@ public class EmotionalControllerTest {
     @Test
     void givenAMessageNullWhenEstimateThenComputeNok(){
         final String message = null; // message null.
-        final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
+        final EmotionalRqDto rq = EmotionalRqDto.builder()
                 .message(message)
                 .build();
 
@@ -123,7 +123,7 @@ public class EmotionalControllerTest {
     @Test
     void givenAMessageEmptyWhenEstimateThenComputeNok(){
         final String message = ""; // message empty.
-        final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
+        final EmotionalRqDto rq = EmotionalRqDto.builder()
                 .message(message)
                 .build();
 
@@ -145,7 +145,7 @@ public class EmotionalControllerTest {
     @Test
     void givenAMessageBlankWhenEstimateThenComputeNok(){
         final String message = "     "; // message blank.
-        final EmotionalMessageRqDto rq = EmotionalMessageRqDto.builder()
+        final EmotionalRqDto rq = EmotionalRqDto.builder()
                 .message(message)
                 .build();
 
@@ -168,7 +168,7 @@ public class EmotionalControllerTest {
     void givenEeIdWhenGetByIdThenGetEeOk() {
         final UUID eeId = UUID.randomUUID();
 
-        final EmotionalMessageRsDto expected = EmotionalMessageRsDto.builder()
+        final EmotionalRsDto expected = EmotionalRsDto.builder()
                 .eeId(eeId)
                 .emotions(Map.of("Amor", 1.0))
                 .build();
@@ -176,7 +176,7 @@ public class EmotionalControllerTest {
         Mockito.when(emotionalService.getById(Mockito.any()))
                 .thenReturn(Optional.of(expected));
 
-        ResponseEntity<EmotionalMessageRsDto> result = emotionalController.getById(eeId);
+        ResponseEntity<EmotionalRsDto> result = emotionalController.getById(eeId);
         Mockito.verify(emotionalService, Mockito.times(1))
                 .getById(Mockito.any());
         Assertions.assertNotNull(result, "The result is not null.");

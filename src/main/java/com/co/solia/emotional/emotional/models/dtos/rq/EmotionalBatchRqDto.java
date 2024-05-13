@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.dtos;
+package com.co.solia.emotional.emotional.models.dtos.rq;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class EmotionalMessagesRqDto {
+public class EmotionalBatchRqDto {
+    /**
+     * the list of messages to estimate.
+     */
     private List<String> messages;
 }

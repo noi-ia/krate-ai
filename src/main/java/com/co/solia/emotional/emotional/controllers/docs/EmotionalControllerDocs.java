@@ -1,9 +1,9 @@
 package com.co.solia.emotional.emotional.controllers.docs;
 
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRqDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessageRsDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessagesRqDto;
-import com.co.solia.emotional.emotional.models.dtos.EmotionalMessagesRsDto;
+import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalRqDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
+import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalBatchRqDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,21 +20,21 @@ public interface EmotionalControllerDocs {
     /**
      * estimate the emotional message.
      * @param emotionalMessage to process.
-     * @return {@link ResponseEntity} of {@link EmotionalMessageRsDto}.
+     * @return {@link ResponseEntity} of {@link EmotionalRsDto}.
      */
-    ResponseEntity<EmotionalMessageRsDto> compute(@RequestBody final EmotionalMessageRqDto emotionalMessage);
+    ResponseEntity<EmotionalRsDto> compute(@RequestBody final EmotionalRqDto emotionalMessage);
 
     /**
      * get an emotional estimated by id.
      * @param idEE to get emotional estimation.
-     * @return {@link ResponseEntity} of {@link EmotionalMessageRsDto}.
+     * @return {@link ResponseEntity} of {@link EmotionalRsDto}.
      */
-    ResponseEntity<EmotionalMessageRsDto> getById(@PathVariable("idEE") final UUID idEE);
+    ResponseEntity<EmotionalRsDto> getById(@PathVariable("idEE") final UUID idEE);
 
     /**
      * compute a list of emotional estimations.
      * @param messages to compute.
-     * @return {@link ResponseEntity} of {@link EmotionalMessagesRsDto}.
+     * @return {@link ResponseEntity} of {@link EmotionalBatchRsDto}.
      */
-    ResponseEntity<EmotionalMessagesRsDto> computeList(@RequestBody final EmotionalMessagesRqDto messages);
+    ResponseEntity<EmotionalBatchRsDto> computeList(@RequestBody final EmotionalBatchRqDto messages);
 }
