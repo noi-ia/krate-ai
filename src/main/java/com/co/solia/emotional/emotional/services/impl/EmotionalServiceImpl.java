@@ -231,17 +231,17 @@ public class EmotionalServiceImpl implements EmotionalService {
 
     /**
      * {@inheritDoc}.
-     * @param beeId batch emotional estimation identifier.
+     * @param id batch emotional estimation identifier.
      * @return
      */
     @Override
-    public Optional<EmotionalBatchRsDto> getECByBatchId(final UUID beeId) {
-        return getEEByBEE(beeId).map(list ->
+    public Optional<EmotionalBatchRsDto> getByBatchId(final UUID id) {
+        return getEEByBEE(id).map(list ->
             EmotionalBatchRsDto.builder()
-                    .idBee(beeId)
+                    .idBee(id)
                     .results(EmotionalMapper.fromDaosGetDtos(list)
                             .orElseThrow(() -> NotFoundException.builder()
-                                    .endpoint("emotional/{idBEE}")
+                                    .endpoint("emotional/compute/batch/" + id)
                                     .message("Data related to idBEE not found.")
                                     .build()))
                     .build());
@@ -266,6 +266,32 @@ public class EmotionalServiceImpl implements EmotionalService {
                    .messages(emotionalBatch.getMessages())
                    .build();
         });
+    }
+
+    /**
+     * {@inheritDoc}.
+     * @param id unique emotional compute identifier.
+     * @return
+     */
+    @Override
+    public Optional<EmotionalUniqueRsDto> getByUniqueId(final UUID id) {
+        return findById(id).flatMap(EmotionalMapper::getFromDao);
+    }
+
+    /**
+     * find emotional unique processed by id.
+     * @param id to get the emotional unique id.
+     * @return {@link Optional} of {@link EmotionalUniqueDao}.
+     */
+    private Optional<EmotionalUniqueDao> findById(final UUID id) {
+        Optional<EmotionalUniqueDao> result = Optional.empty();
+        try {
+            result = emotionalUniqueRepo.findById(id);
+            log.info("[findById]: the db response ok getting emotional unique.");
+        } catch(Exception e) {
+            log.error("[findById]: Error finding emotional unique by id: {}, error: {}", id, e.getMessage());
+        }
+        return result;
     }
 
     /**

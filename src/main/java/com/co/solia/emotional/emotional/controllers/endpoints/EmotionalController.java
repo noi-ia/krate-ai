@@ -83,33 +83,49 @@ public class EmotionalController implements EmotionalControllerDocs {
 
     /**
      * get emotional estimation by id.
-     * @param idEE to get emotional estimation.
+     * @param id to get emotional estimation.
      * @return {@link ResponseEntity} of {@link EmotionalRsDto}
      */
-    @GetMapping("/{idEE}")
-    public ResponseEntity<EmotionalRsDto> getById(@PathVariable("idEE") final UUID idEE) {
-        EmotionalValidator.validateIdEe(idEE);
-        return emotionalService.getById(idEE)
+    @GetMapping("/compute/{id}")
+    public ResponseEntity<EmotionalRsDto> getById(@PathVariable("id") final UUID id) {
+        EmotionalValidator.validateIdEe(id);
+        return emotionalService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
                         .message("Error getting emotional compute by id")
-                        .endpoint("/emotional/{idEE}")
+                        .endpoint("/emotional/compute/" + id)
                         .build());
     }
 
     /**
      * get the messages processed by batch emotional compute id.
-     * @param idBEE batch emotional estimation id.
+     * @param id batch emotional estimation id.
      * @return {@link ResponseEntity} of {@link EmotionalBatchRsDto}.
      */
-    @GetMapping("/batch/{idBEE}")
-    public ResponseEntity<EmotionalBatchRsDto> getByBatchECId(@PathVariable("idBEE") final UUID idBEE){
-        EmotionalValidator.validateIdEe(idBEE);
-        return emotionalService.getECByBatchId(idBEE)
+    @GetMapping("/compute/batch/{id}")
+    public ResponseEntity<EmotionalBatchRsDto> getByBatchECId(@PathVariable("id") final UUID id){
+        EmotionalValidator.validateIdEe(id);
+        return emotionalService.getByBatchId(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> NotFoundException.builder()
                         .message("Error getting emotional compute by batch id")
-                        .endpoint("/emotional/batch/{idBEE}")
+                        .endpoint("/emotional/compute/batch/" + id)
+                        .build());
+    }
+
+    /**
+     * get emotional unique compute by id.
+     * @param id unique compute identifier.
+     * @return {@link ResponseEntity} of {@link EmotionalUniqueRsDto}.
+     */
+    @GetMapping("/compute/unique/{id}")
+    public ResponseEntity<EmotionalUniqueRsDto> getByUniqueId(@PathVariable("id") final UUID id) {
+        EmotionalValidator.validateIdEe(id);
+        return emotionalService.getByUniqueId(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .message("Error getting emotional compute by unique id")
+                        .endpoint("/emotional/compute/unique/" + id)
                         .build());
     }
 }

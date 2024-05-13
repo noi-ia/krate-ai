@@ -4,7 +4,9 @@ import com.co.solia.emotional.emotional.models.daos.EmotionalDao;
 import com.co.solia.emotional.emotional.models.daos.EmotionalUniqueDao;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
+import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
@@ -116,7 +118,7 @@ public class EmotionalMapper {
      * @param dao to get emotions.
      * @return {@link Map} of {@code key}: {@link String} with {@code value}: {@link Double}.
      */
-    private static Map<String, Double> getEmotionsFromDao(EmotionalDao dao) {
+    private static Map<String, Double> getEmotionsFromDao(final EmotionalDao dao) {
         Map<String, Double> emotions = Map.of();
         try {
             emotions = new Gson().fromJson(dao.getEstimates(), Map.class);
@@ -195,7 +197,7 @@ public class EmotionalMapper {
                 .filter(Objects::nonNull)
                 .filter(c -> !c.choices().isEmpty())
                 .findFirst()
-                .map(c -> getEUFromCC(c, id, userId, messages.toString(), duration));
+                .map(c -> getEUFromCC(c, id, userId, messages, duration));
     }
 
     /**
@@ -208,7 +210,7 @@ public class EmotionalMapper {
      * @return {@link EmotionalUniqueDao}.
      */
     private static EmotionalUniqueDao getEUFromCC(
-            final ChatCompletion chat, final UUID id, final UUID userId, final String messages, Long duration) {
+            final ChatCompletion chat, final UUID id, final UUID userId, final List<String> messages, Long duration) {
         return EmotionalUniqueDao.builder()
                 .id(id)
                 .idUser(userId)
@@ -219,5 +221,36 @@ public class EmotionalMapper {
                 .duration(duration)
                 .tokens(chat.usage().promptTokens() - PROMPT_EMOTIONAL_UNIQUE_TOKEN_SIZE)
                 .build();
+    }
+
+    /**
+     * get a {@link EmotionalUniqueRsDto} from a {@link EmotionalUniqueDao}.
+     * @param dao to get the {@link EmotionalUniqueRsDto}.
+     * @return {@link Optional} with a {@link EmotionalUniqueRsDto} from a {@link EmotionalUniqueDao}.
+     */
+    public static Optional<EmotionalUniqueRsDto> getFromDao(final EmotionalUniqueDao dao) {
+        return Stream.of(dao)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(d -> EmotionalUniqueRsDto.builder()
+                        .id(d.getId())
+                        .messages(d.getMessages())
+                        .emotions(getEmotionsFromString(d.getEstimations()))
+                        .build());
+    }
+
+    /**
+     * get emotions from {@link String}.
+     * @param results to get emotions.
+     * @return {@link Map} of {@code key}: {@link String} with {@code value}: {@link Double}.
+     */
+    private static Map<String, Double> getEmotionsFromString(final String results) {
+        Map<String, Double> emotions = Map.of();
+        try {
+            emotions = new Gson().fromJson(results, Map.class);
+        } catch (Exception e) {
+            log.error("[getEmotionsFromString]: error parsing data from json: {}", e.getMessage());
+        }
+        return emotions;
     }
 }

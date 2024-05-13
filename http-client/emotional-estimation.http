@@ -39,3 +39,6 @@ Content-Type: application/json
     "no los sustituyo, complemento"
   ]
 }
+
+### Get a emotional unique compute by id
+GET localhost:8080/1/emotional/compute/unique/b6fbb344-da94-4433-b3f6-d67540d32ccc

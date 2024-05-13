@@ -60,10 +60,10 @@ public interface EmotionalService {
 
     /**
      * get a messages processed by batch identifier.
-     * @param beeId batch emotional estimation identifier.
+     * @param id batch emotional compute identifier.
      * @return {@link Optional} of {@link EmotionalBatchRsDto}.
      */
-    Optional<EmotionalBatchRsDto> getECByBatchId(UUID beeId);
+    Optional<EmotionalBatchRsDto> getByBatchId(UUID id);
 
     /**
      * compute unique emotional in messages.
@@ -71,4 +71,11 @@ public interface EmotionalService {
      * @return {@link Optional} of {@link EmotionalUniqueRsDto}.
      */
     Optional<EmotionalUniqueRsDto> computeUnique(EmotionalBatchRqDto emotionalBatch);
+
+    /**
+     * get a messages processed by unique identifier.
+     * @param id unique emotional compute identifier.
+     * @return {@link Optional} of {@link EmotionalUniqueRsDto}.
+     */
+    Optional<EmotionalUniqueRsDto> getByUniqueId(UUID id);
 }
