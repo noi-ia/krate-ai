@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.exceptions;
+package com.co.solia.emotional.share.models.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,5 +1,6 @@
 package com.co.solia.emotional.emotional.controllers.endpoints;
 
+import com.co.solia.emotional.emotional.controllers.endpoints.v1.EmotionalController;
 import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalRqDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
 import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;

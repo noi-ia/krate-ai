@@ -1,6 +1,6 @@
-package com.co.solia.emotional.emotional.services.impl;
+package com.co.solia.emotional.share.services.impls;
 
-import com.co.solia.emotional.emotional.services.services.OpenAIService;
+import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest;
@@ -73,6 +73,16 @@ public class OpenaiServiceImpl implements OpenAIService {
     public Optional<ChatCompletion> emotionalComputeUnique(final List<String> messages) {
         log.info("[emotionalComputeUnique]: starting unique emotional compute: {}", messages.size());
         return callOpenAiEEU(messages);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @param messages to process.
+     * @return
+     */
+    @Override
+    public Optional<ChatCompletion> clean(List<String> messages) {
+        return Optional.empty();
     }
 
     /**

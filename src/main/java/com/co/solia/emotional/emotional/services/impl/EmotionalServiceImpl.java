@@ -8,14 +8,14 @@ import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalBatchRqDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
-import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
-import com.co.solia.emotional.emotional.models.exceptions.NotFoundException;
 import com.co.solia.emotional.emotional.models.mappers.EmotionalMapper;
 import com.co.solia.emotional.emotional.models.repos.EmotionalBatchRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalUniqueRepo;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
-import com.co.solia.emotional.emotional.services.services.OpenAIService;
+import com.co.solia.emotional.share.models.exceptions.InternalServerException;
+import com.co.solia.emotional.share.models.exceptions.NotFoundException;
+import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
@@ -238,7 +238,7 @@ public class EmotionalServiceImpl implements EmotionalService {
     public Optional<EmotionalBatchRsDto> getByBatchId(final UUID id) {
         return getEEByBEE(id).map(list ->
             EmotionalBatchRsDto.builder()
-                    .idBee(id)
+                    .id(id)
                     .results(EmotionalMapper.fromDaosGetDtos(list)
                             .orElseThrow(() -> NotFoundException.builder()
                                     .endpoint("emotional/compute/batch/" + id)

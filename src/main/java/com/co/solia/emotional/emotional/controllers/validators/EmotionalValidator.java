@@ -1,8 +1,8 @@
 package com.co.solia.emotional.emotional.controllers.validators;
 
 
-import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
 import com.co.solia.emotional.emotional.utils.BasicValidator;
+import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

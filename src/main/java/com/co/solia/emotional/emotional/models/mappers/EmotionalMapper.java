@@ -6,7 +6,6 @@ import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
@@ -107,7 +106,7 @@ public class EmotionalMapper {
                 .filter(d -> !d.getEstimates().isBlank())
                         .findFirst()
                                 .map(d -> EmotionalRsDto.builder()
-                                        .eeId(dao.getIdEE())
+                                        .id(dao.getIdEE())
                                         .emotions(getEmotionsFromDao(dao))
                                         .message(dao.getMessage())
                                         .build());
@@ -153,7 +152,7 @@ public class EmotionalMapper {
         return !ees.isEmpty() && idBee != null?
                 Optional.of(EmotionalBatchRsDto.builder()
                                 .results(ees)
-                                .idBee(idBee)
+                                .id(idBee)
                         .build()) : Optional.empty();
     }
 

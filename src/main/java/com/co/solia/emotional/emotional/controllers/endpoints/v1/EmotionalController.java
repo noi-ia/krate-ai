@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.controllers.endpoints;
+package com.co.solia.emotional.emotional.controllers.endpoints.v1;
 
 import com.co.solia.emotional.emotional.controllers.docs.EmotionalControllerDocs;
 import com.co.solia.emotional.emotional.controllers.validators.EmotionalValidator;
@@ -7,9 +7,9 @@ import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalBatchRqDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
-import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
-import com.co.solia.emotional.emotional.models.exceptions.NotFoundException;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
+import com.co.solia.emotional.share.models.exceptions.InternalServerException;
+import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +57,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      * @return {@link ResponseEntity} of {@link EmotionalBatchRsDto}.
      */
     @PostMapping("/compute/batch/")
-    public ResponseEntity<EmotionalBatchRsDto> computeList(@RequestBody final EmotionalBatchRqDto messages) {
+    public ResponseEntity<EmotionalBatchRsDto> computeBatch(@RequestBody final EmotionalBatchRqDto messages) {
         EmotionalValidator.validateMessages(messages.getMessages());
         return emotionalService.computeList(messages)
                 .map(ResponseEntity::ok)

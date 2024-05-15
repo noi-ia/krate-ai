@@ -1,5 +1,6 @@
 package com.co.solia.emotional.emotional.models.dtos.rs;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,10 +23,19 @@ public class EmotionalBatchRsDto {
     /**
      * id of emotional estimation batch process.
      */
-    private UUID idBee;
+    @Schema(
+            name = "id",
+            description = "identifier of batch processing.",
+            type = "UUID",
+            example = "b6fbb344-da94-4433-b3f6-d67540d32ccc")
+    private UUID id;
 
     /**
      * results from emotional processing.
      */
+    @Schema(
+            name = "results",
+            description = "the results of batch processing.",
+            type = "List")
     private List<EmotionalRsDto> results;
 }

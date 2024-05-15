@@ -1,10 +1,10 @@
-package com.co.solia.emotional.emotional.controllers.validators;
+package com.co.solia.emotional.share.controllers.validators;
 
 
 import com.co.solia.emotional.emotional.models.dtos.rs.DefaultRsDto;
-import com.co.solia.emotional.emotional.models.exceptions.InternalServerException;
-import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
-import com.co.solia.emotional.emotional.models.exceptions.NotFoundException;
+import com.co.solia.emotional.share.models.exceptions.BadRequestException;
+import com.co.solia.emotional.share.models.exceptions.InternalServerException;
+import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;

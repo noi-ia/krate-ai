@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.services.services;
+package com.co.solia.emotional.share.services.services;
 
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 
@@ -26,4 +26,11 @@ public interface OpenAIService {
      * @return {@link Optional} of {@link ChatCompletion}.
      */
     Optional<ChatCompletion> emotionalComputeUnique(final List<String> messages);
+
+    /**
+     * clean service with openai service.
+     * @param messages to process.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
+    Optional<ChatCompletion> clean(List<String> messages);
 }

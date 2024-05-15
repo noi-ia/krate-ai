@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.exceptions;
+package com.co.solia.emotional.share.models.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Internal server exception.
+ * Bad request exception.
  *
  * @author luis.bolivar
  */
@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Getter
-public class InternalServerException extends RuntimeException{
+public class BadRequestException extends RuntimeException {
+
     /**
      * message about the exception.
      */
