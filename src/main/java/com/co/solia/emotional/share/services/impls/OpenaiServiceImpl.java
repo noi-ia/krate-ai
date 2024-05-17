@@ -27,29 +27,49 @@ import java.util.stream.Stream;
  *
  * @author luis.bolivar
  */
-
 @Slf4j
 @Service
 public class OpenaiServiceImpl implements OpenAIService {
 
+    /**
+     * openai apikey as a secret.
+     */
     private final String OPENAI_APIKEY;
 
+    /**
+     * prompt to do emotional_estimation.
+     */
     private final String PROMPT_EMOTIONAL;
 
+    /**
+     * prompt to do emotional estimation in multiple message.
+     */
     private final String PROMPT_EMOTIONAL_UNIQUE;
 
+    /**
+     * prompt to clean the comment.
+     */
+    private final String PROMPT_CLEAN;
+
+    /**
+     * openai model used.
+     */
     private final String OPENAI_MODEL;
+
+    private static final String JSOM_FORMAT_OPENAI = "json_object";
 
     @Autowired
     public OpenaiServiceImpl(
             @Value("${solia.emotional.openai.apikey}") final String openaiApikey,
             @Value("${solia.emotional.openai.prompt.emotional}") final String promptEmotional,
             @Value("${solia.emotional.openai.prompt.emotional.unique}") final String promptEmotionalUnique,
-            @Value("${solia.emotional.openai.model}") final String openaiModel){
+            @Value("${solia.emotional.openai.model}") final String openaiModel,
+            @Value("${solia.emotional.openai.prompt.clean}") final String promptClean){
         this.OPENAI_APIKEY = openaiApikey;
         this.PROMPT_EMOTIONAL = promptEmotional;
         this.PROMPT_EMOTIONAL_UNIQUE = promptEmotionalUnique;
         this.OPENAI_MODEL = openaiModel;
+        this.PROMPT_CLEAN = promptClean;
     }
 
 
@@ -81,8 +101,9 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @return
      */
     @Override
-    public Optional<ChatCompletion> clean(List<String> messages) {
-        return Optional.empty();
+    public Optional<ChatCompletion> clean(final String messages) {
+        log.info("[clean]: starting clean message: {}", messages);
+        return callOpenAiClean(messages);
     }
 
     /**
@@ -108,11 +129,29 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param message to estimate.
      * @return {@link Optional} of {@link ChatCompletion}.
      */
+    private Optional<ChatCompletion> callOpenAiClean(final String message) {
+        Optional<ChatCompletion> result = Optional.empty();
+        try {
+            final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
+                    .chatCompletionEntity(getCleanChatRequest(message));
+            result = mapResult(response);
+        } catch (Exception e) {
+            log.error("[callOpenAiClean]: Error getting response from OpenAI: {}", e.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * call to OpenAI api.
+     * @param message to estimate.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
     private Optional<ChatCompletion> callOpenAiEE(final String message) {
         Optional<ChatCompletion> result = Optional.empty();
         try {
             final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
-                    .chatCompletionEntity(getEmotionalChatRequest(message));
+                    .chatCompletionEntity(getChatRequest(message));
             result = mapResult(response);
         } catch (Exception e) {
             log.error("[callOpenAiEE]: Error getting response from OpenAI: {}", e.getMessage());
@@ -148,11 +187,11 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param message from the user to get the emotional compute.
      * @return {@link ChatCompletionRequest}
      */
-    private ChatCompletionRequest getEmotionalChatRequest(final String message) {
+    private ChatCompletionRequest getChatRequest(final String message) {
         final String model = getModel();
         final Float temperature = 0.0f;
-        final ResponseFormat responseFormat = new ResponseFormat("json_object");
-        return getEmotionalChatRequest(getEmotionalMessages(message), model, temperature, responseFormat);
+        final ResponseFormat responseFormat = new ResponseFormat(JSOM_FORMAT_OPENAI);
+        return getChatRequest(getEmotionalMessages(message), model, temperature, responseFormat);
     }
 
     /**
@@ -163,10 +202,21 @@ public class OpenaiServiceImpl implements OpenAIService {
     private ChatCompletionRequest getEmotionalUniqueChatRequest(final String message) {
         final String model = getModel();
         final Float temperature = 0.0f;
-        final ResponseFormat responseFormat = new ResponseFormat("json_object");
-        return getEmotionalChatRequest(getEmotionalUniqueMessages(message), model, temperature, responseFormat);
+        final ResponseFormat responseFormat = new ResponseFormat(JSOM_FORMAT_OPENAI);
+        return getChatRequest(getEmotionalUniqueMessages(message), model, temperature, responseFormat);
     }
 
+    /**
+     * method to create the request to clean compute.
+     * @param message from the user to get clean comment.
+     * @return {@link ChatCompletionRequest}
+     */
+    private ChatCompletionRequest getCleanChatRequest(final String message) {
+        final String model = getModel();
+        final Float temperature = 0.0f;
+        final ResponseFormat responseFormat = new ResponseFormat(JSOM_FORMAT_OPENAI);
+        return getChatRequest(getCleanMessages(message), model, temperature, null);
+    }
 
     /**
      * override of the method to create the request.
@@ -176,11 +226,11 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param responseFormat format of the response.
      * @return {@link ChatCompletionRequest}
      */
-    private static ChatCompletionRequest getEmotionalChatRequest(final List<ChatCompletionMessage> messages,
-                                                                 final String model,
-                                                                 final Float temperature,
-                                                                 final ResponseFormat responseFormat){
-        return getEmotionalChatRequest(messages, model,
+    private static ChatCompletionRequest getChatRequest(final List<ChatCompletionMessage> messages,
+                                                        final String model,
+                                                        final Float temperature,
+                                                        final ResponseFormat responseFormat){
+        return getChatRequest(messages, model,
                 null, null, null, 1, null, responseFormat,
                 null, null, Boolean.FALSE, temperature, null, null, null, null);
     }
@@ -205,7 +255,7 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param user to map a user.
      * @return {@link ChatCompletionRequest}.
      */
-    public static ChatCompletionRequest getEmotionalChatRequest(
+    public static ChatCompletionRequest getChatRequest(
             final List<ChatCompletionMessage> messages,
             final String model,
             final Float frequencyPenalty,
@@ -274,6 +324,22 @@ public class OpenaiServiceImpl implements OpenAIService {
     }
 
     /**
+     * method to get the message from clean to send to openai.
+     * @param message to create to get the user message.
+     * @return {@link List} of {@link ChatCompletionMessage}.
+     */
+    private List<ChatCompletionMessage> getCleanMessages(final String message){
+        List<ChatCompletionMessage> messages = new ArrayList<>();
+        try {
+            messages = List.of(getSysMessClean(), getUserMessage(message));
+        } catch (Exception e) {
+            log.error("[getCleanMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
+        }
+
+        return messages;
+    }
+
+    /**
      * method to get the user message in {@link ChatCompletionMessage} format.
      * @param message to pass to {@link ChatCompletionMessage}.
      * @return {@link ChatCompletionMessage}.
@@ -304,6 +370,14 @@ public class OpenaiServiceImpl implements OpenAIService {
      */
     private String getModel(){
         return OPENAI_MODEL;
+    }
+
+    /**
+     * method to get the system message in {@link ChatCompletionMessage} format to clean.
+     * @return {@link ChatCompletionMessage}.
+     */
+    private ChatCompletionMessage getSysMessClean(){
+        return new ChatCompletionMessage(PROMPT_CLEAN, Role.SYSTEM);
     }
 
 }

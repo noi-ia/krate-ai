@@ -28,5 +28,5 @@ public class CleanRsDto {
     /**
      * list of messages cleaned.
      */
-    private List<Map<String, String>> result;
+    private Map<String, String> result;
 }

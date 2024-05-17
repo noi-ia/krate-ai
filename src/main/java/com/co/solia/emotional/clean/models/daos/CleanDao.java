@@ -1,9 +1,10 @@
-package com.co.solia.emotional.emotional.models.daos;
+package com.co.solia.emotional.clean.models.daos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,42 +12,43 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * representation of emotional estimation for the db.
+ * class to persistence the clean process.
  *
  * @author luis.bolivar.
  */
 @Builder
-@Getter
-@Document("emotional")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmotionalDao {
+@Getter
+@ToString
+@Document("clean")
+public class CleanDao {
 
     /**
-     * id of emotional estimation.
+     * id of cleaning.
      */
     @Id
     private UUID id;
 
     /**
-     * user identifier that start emotional estimation.
+     * user identifier that start cleaning.
      */
     private UUID idUser;
 
     /**
-     * id of batch emotional estimation.
+     * id of batch cleaning.
      */
     private UUID idBatch;
 
     /**
-     * message associated to the emotional estimation.
+     * message associated to the cleaning.
      */
     private String message;
 
     /**
-     * result of emotional estimation in json format.
+     * result of cleaning in String.
      */
-    private String estimates;
+    private String result;
 
     /**
      * tokens of message representing.
@@ -60,13 +62,13 @@ public class EmotionalDao {
     private Boolean activate = Boolean.TRUE;
 
     /**
-     * date of emotional estimation created.
+     * date of cleaning created.
      */
     @Builder.Default
     private long created = Instant.now().getEpochSecond();
 
     /**
-     * duration of emotional estimation.
+     * duration of cleaning.
      */
     private long duration;
 

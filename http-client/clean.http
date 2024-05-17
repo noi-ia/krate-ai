@@ -1,0 +1,15 @@
+### 1. clean message
+POST localhost:8080/1/clean/compute/
+Content-Type: application/json
+
+{
+  "message": "ME AYUDARON DESPUs√©ES DE UN PROCESO EN EL QUE NO PODIA COMER BIEN , NO ME PASADBA LA CARN E"
+}
+
+### create a emotional unique comput
+POST localhost:8080/1/clean/compute/
+Content-Type: application/json
+
+{
+  "message": "ME AYUDARON DESPUs√©ES DE UN PROCESO EN EL QUE NO PODIA COMER BIEN , NO ME PASADBA LA CARN E"
+}

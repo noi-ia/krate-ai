@@ -13,6 +13,7 @@ import com.co.solia.emotional.emotional.models.repos.EmotionalBatchRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalUniqueRepo;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
+import com.co.solia.emotional.emotional.utils.BasicValidator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import com.co.solia.emotional.share.services.services.OpenAIService;
@@ -81,7 +82,7 @@ public class EmotionalServiceImpl implements EmotionalService {
             final UUID idBee) {
         final Instant start = Instant.now();
         return openAIService.emotionalCompute(message).map(resultEE -> {
-            final long duration = getDuration(start.toEpochMilli(), Instant.now().toEpochMilli());
+            final long duration = BasicValidator.getDuration(start.toEpochMilli(), Instant.now().toEpochMilli());
             return mapAndSaveEE(message, resultEE, userId, UUID.randomUUID(), idBee, duration)
                     .flatMap(EmotionalMapper::fromDaoToRsDto);
         }).orElseThrow(() -> InternalServerException.builder().message("Could not call to openai.").endpoint("/emotional/").build());
@@ -111,7 +112,7 @@ public class EmotionalServiceImpl implements EmotionalService {
         final long start = Instant.now().toEpochMilli();
         final List<EmotionalRsDto> ees = computeMessages(messages, userId, idBee);
         final long end = Instant.now().toEpochMilli();
-        saveBatch(messages.getMessages().size(), userId, idBee, getDuration(start, end));
+        saveBatch(messages.getMessages().size(), userId, idBee, BasicValidator.getDuration(start, end));
         return !ees.isEmpty() ? Optional.of(ees) : Optional.empty();
     }
 
@@ -144,16 +145,6 @@ public class EmotionalServiceImpl implements EmotionalService {
                 .forEach(message -> estimateMessage(message, userId, idBee).map(ees::add));
         log.info("[computeMessages] total messages processed: {}", messages.getMessages().size());
         return ees;
-    }
-
-    /**
-     * get duration of openai processing.
-     * @param start date.
-     * @param end date.
-     * @return {@link Long} total duration of openai processing.
-     */
-    private static long getDuration(long start, long end) {
-        return end - start;
     }
 
     /**
@@ -258,8 +249,8 @@ public class EmotionalServiceImpl implements EmotionalService {
         final UUID userID = UUID.randomUUID();
         final long start = Instant.now().toEpochMilli();
         return openAIService.emotionalComputeUnique(emotionalBatch.getMessages()).map(chat -> {
-            final long end = Instant.now().toEpochMilli();
-            mapAndSave(emotionalBatch.getMessages(), chat, id, userID, getDuration(start, end));
+            mapAndSave(emotionalBatch.getMessages(), chat, id, userID,
+                    BasicValidator.getDuration(start, Instant.now().toEpochMilli()));
            return EmotionalUniqueRsDto.builder()
                    .id(id)
                    .emotions(EmotionalMapper.getEmotionsFromChatCompletion(chat))

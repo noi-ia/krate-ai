@@ -29,8 +29,8 @@ public interface OpenAIService {
 
     /**
      * clean service with openai service.
-     * @param messages to process.
+     * @param message to process.
      * @return {@link Optional} of {@link ChatCompletion}.
      */
-    Optional<ChatCompletion> clean(List<String> messages);
+    Optional<ChatCompletion> clean(String message);
 }

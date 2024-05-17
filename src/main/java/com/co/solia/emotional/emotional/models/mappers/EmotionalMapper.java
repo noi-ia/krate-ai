@@ -81,7 +81,7 @@ public class EmotionalMapper {
             final ChatCompletion result) {
         return EmotionalDao.builder()
                 .message(message)
-                .idEE(idEE)
+                .id(idEE)
                 .idBatch(idBEE)
                 .idUser(userId)
                 .openAiId(result.id())
@@ -100,13 +100,13 @@ public class EmotionalMapper {
     public static Optional<EmotionalRsDto> fromDaoToRsDto(final EmotionalDao dao) {
         return Stream.of(dao)
                         .filter(Objects::nonNull)
-                                .filter(d -> d.getIdEE() != null)
+                                .filter(d -> d.getId() != null)
                                         .filter(d -> d.getEstimates() != null)
                 .filter(d -> !d.getEstimates().isEmpty())
                 .filter(d -> !d.getEstimates().isBlank())
                         .findFirst()
                                 .map(d -> EmotionalRsDto.builder()
-                                        .id(dao.getIdEE())
+                                        .id(dao.getId())
                                         .emotions(getEmotionsFromDao(dao))
                                         .message(dao.getMessage())
                                         .build());

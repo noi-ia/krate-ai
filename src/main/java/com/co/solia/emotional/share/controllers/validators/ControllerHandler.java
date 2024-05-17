@@ -1,7 +1,7 @@
 package com.co.solia.emotional.share.controllers.validators;
 
 
-import com.co.solia.emotional.emotional.models.dtos.rs.DefaultRsDto;
+import com.co.solia.emotional.share.models.dtos.rs.DefaultRsDto;
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;

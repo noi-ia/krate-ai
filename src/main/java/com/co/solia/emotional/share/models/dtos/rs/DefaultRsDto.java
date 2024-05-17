@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.dtos.rs;
+package com.co.solia.emotional.share.models.dtos.rs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

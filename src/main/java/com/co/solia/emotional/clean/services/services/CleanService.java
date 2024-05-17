@@ -1,5 +1,6 @@
 package com.co.solia.emotional.clean.services.services;
 
+import com.co.solia.emotional.clean.models.daos.CleanDao;
 import com.co.solia.emotional.clean.models.dtos.rq.CleanRqDto;
 import com.co.solia.emotional.clean.models.dtos.rs.CleanRsDto;
 
@@ -18,4 +19,10 @@ public interface CleanService {
      * @return {@link Optional} of {@link CleanRsDto}.
      */
     Optional<CleanRsDto> clean(CleanRqDto cleanRq);
+
+    /**
+     * save the cleaning process.
+     * @param clean to save.
+     */
+    void save(CleanDao clean);
 }
