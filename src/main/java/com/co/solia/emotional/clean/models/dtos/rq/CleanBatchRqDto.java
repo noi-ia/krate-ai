@@ -5,8 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 /**
- * class to map the request for cleaning message.
+ * class to map the request for cleaning messages.
  *
  * @author luis.bolivar.
  */
@@ -14,10 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CleanRqDto {
+public class CleanBatchRqDto {
 
     /**
-     * message to clean.
+     * messages to clean.
      */
-    private String message;
+    private List<String> messages;
 }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,15 +18,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CleanRsDto {
+public class CleanBatchRsDto {
 
     /**
-     * id of processing.
+     * id batch of processing.
      */
     private UUID id;
 
     /**
      * list of messages cleaned.
      */
-    private Map<String, String> result;
+    private List<Map<String, String>> results;
 }

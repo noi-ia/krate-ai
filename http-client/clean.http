@@ -1,4 +1,4 @@
-### 1. clean message
+### clean a message
 POST localhost:8080/1/clean/compute/
 Content-Type: application/json
 
@@ -6,10 +6,21 @@ Content-Type: application/json
   "message": "ME AYUDARON DESPUs√©ES DE UN PROCESO EN EL QUE NO PODIA COMER BIEN , NO ME PASADBA LA CARN E"
 }
 
-### create a emotional unique comput
-POST localhost:8080/1/clean/compute/
+### get a cleaned message by id.
+GET localhost:8080/1/clean/compute/1293029e-8312-4ce6-b921-e755a22bccdb
+
+
+### clean messages
+POST localhost:8080/1/clean/compute/batch/
 Content-Type: application/json
 
 {
-  "message": "ME AYUDARON DESPUs√©ES DE UN PROCESO EN EL QUE NO PODIA COMER BIEN , NO ME PASADBA LA CARN E"
+  "messages": [
+    "ME AYUDARON DESPUs√©ES DE UN PROCESO EN EL QUE NO PODIA COMER BIEN , NO ME PASADBA LA CARN E",
+    "los he usado para quemar grasa en un t√≥e",
+    "son prs√©acticos como complemento"
+  ]
 }
+
+### get clean messages by batch id
+GET localhost:8080/1/clean/compute/batch/817e4ad8-e629-4bba-b0d0-4a05260357c6

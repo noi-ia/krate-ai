@@ -14,6 +14,7 @@ import java.util.UUID;
  */
 @Repository
 public interface EmotionalRepo extends MongoRepository<EmotionalDao, UUID> {
+
     /**
      * get a {@link Optional} of {@link List} of {@link EmotionalDao}.
      * @param idBatch batch emotional estimation identifier.

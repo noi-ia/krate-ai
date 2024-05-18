@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.daos;
+package com.co.solia.emotional.clean.models.daos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,16 +11,16 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Entity to save in db the batch emotional process.
+ * Entity to save in db the batch cleaning process.
  *
  * @author luis.bolivar
  */
 @Builder
 @Getter
-@Document("emotionalBatch")
+@Document("cleanBatch")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmotionalBatchDao {
+public class CleanBatchDao {
 
     /**
      * id of batch emotional compute.

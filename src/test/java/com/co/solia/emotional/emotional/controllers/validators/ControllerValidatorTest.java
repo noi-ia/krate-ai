@@ -1,8 +1,7 @@
 package com.co.solia.emotional.emotional.controllers.validators;
 
-
-import com.co.solia.emotional.emotional.controllers.validators.EmotionalValidator;
-import com.co.solia.emotional.emotional.models.exceptions.BadRequestException;
+import com.co.solia.emotional.emotional.utils.ControllerValidator;
+import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,12 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 /**
- * test for {@link EmotionalValidator}.
+ * test for {@link ControllerValidator}.
  *
  * @author luis.bolivar
  */
 @ExtendWith(MockitoExtension.class)
-public class EmotionalValidatorTest {
+public class ControllerValidatorTest {
 
     /**
      * happy path, validate message.
@@ -24,7 +23,7 @@ public class EmotionalValidatorTest {
     @Test
     void givenMessageWhenValidateMessageThenValidateOk(){
         final String message = "I'm happy.";
-        EmotionalValidator.validateMessage(message);
+        ControllerValidator.validateMessage(message, "val");
         Assertions.assertTrue(Boolean.TRUE, "The message was successfully validated.");
     }
 
@@ -35,7 +34,7 @@ public class EmotionalValidatorTest {
     void givenMessageNullWhenValidateMessageThenValidateOk(){
         final String message = null;
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> EmotionalValidator.validateMessage(message));
+                () -> ControllerValidator.validateMessage(message, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");
@@ -50,7 +49,7 @@ public class EmotionalValidatorTest {
     void givenMessageBlankWhenValidateMessageThenValidateOk(){
         final String message = "    ";
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> EmotionalValidator.validateMessage(message));
+                () -> ControllerValidator.validateMessage(message, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");
@@ -65,7 +64,7 @@ public class EmotionalValidatorTest {
     void givenMessageEmptyWhenValidateMessageThenValidateOk(){
         final String message = "";
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> EmotionalValidator.validateMessage(message));
+                () -> ControllerValidator.validateMessage(message, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");
@@ -79,7 +78,7 @@ public class EmotionalValidatorTest {
     @Test
     void givenIdEeWhenValidateIdThenValidateOk(){
         final UUID idEe = UUID.randomUUID();
-        EmotionalValidator.validateIdEe(idEe);
+        ControllerValidator.validateId(idEe, "val");
         Assertions.assertTrue(Boolean.TRUE, "The endpoint is valid");
     }
 
@@ -90,7 +89,7 @@ public class EmotionalValidatorTest {
     void givenIdNullEeWhenValidateIdThenValidateOk(){
         final UUID idEe = null;
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> EmotionalValidator.validateIdEe(idEe));
+                () -> ControllerValidator.validateId(idEe, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");

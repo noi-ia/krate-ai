@@ -1,11 +1,15 @@
 package com.co.solia.emotional.clean.models.mappers;
 
+import com.co.solia.emotional.clean.models.daos.CleanBatchDao;
 import com.co.solia.emotional.clean.models.daos.CleanDao;
+import com.co.solia.emotional.clean.models.dtos.rs.CleanBatchRsDto;
 import com.co.solia.emotional.clean.models.dtos.rs.CleanRsDto;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -95,5 +99,51 @@ public class CleanMapper {
                 "message", dao.getMessage(),
                 "result", dao.getResult()
         );
+    }
+
+    /**
+     * get a {@link CleanBatchDao} from messages processed.
+     * @param id of batch processing.
+     * @param totalMessages cleaned.
+     * @param userId user identifier.
+     * @param duration duration of process.
+     * @return {@link Optional} of {@link CleanBatchDao}.
+     */
+    public static Optional<CleanBatchDao> getDaoFromListRsDto(
+            final UUID id,
+            final int totalMessages,
+            final UUID userId,
+            final long duration) {
+        return Optional.of(CleanBatchDao.builder()
+                        .id(id)
+                        .amountMessages(totalMessages)
+                        .userId(userId)
+                        .duration(duration)
+                .build());
+    }
+
+    /**
+     * get result by cleaning processed list.
+     * @param id of batch processing.
+     * @param results clean messages processed.
+     * @return {@link Optional} of {@link CleanBatchDao}.
+     */
+    public static Optional<CleanBatchRsDto> getRsFromResults(final UUID id, final List<CleanRsDto> results) {
+        final List<Map<String, String>> cleanMessages = results.parallelStream().map(CleanRsDto::getResult).toList();
+        return Optional.of(CleanBatchRsDto.builder()
+                .id(id)
+                .results(cleanMessages)
+                .build());
+    }
+
+    /**
+     * get a {@link List} of {@link CleanRsDto} from a {@link List} of {@link CleanDao}.
+     * @param daos to get the {@link List} of {@link CleanRsDto}.
+     * @return {@link List} of {@link CleanRsDto}.
+     */
+    public static Optional<List<CleanRsDto>> getRsFromDaos(final List<CleanDao> daos) {
+        final List<CleanRsDto> results = new ArrayList<>(daos.size());
+        daos.parallelStream().forEach(dao -> CleanMapper.getRsDtoFromDao(dao).map(results::add));
+        return results.isEmpty() ? Optional.empty() : Optional.of(results);
     }
 }

@@ -2,13 +2,15 @@ package com.co.solia.emotional.emotional.utils;
 
 import lombok.experimental.UtilityClass;
 
+import java.time.Instant;
+
 /**
  * basic validations on fields.
  *
  * @author luis.bolivar.
  */
 @UtilityClass
-public class BasicValidator {
+public class BasicUtils {
 
     /**
      * validate the string field.
@@ -27,5 +29,13 @@ public class BasicValidator {
      */
     public static long getDuration(long start, long end) {
         return end - start;
+    }
+
+    /**
+     * get the milliseconds to start a process.
+     * @return a long duration.
+     */
+    public static long getStart() {
+        return Instant.now().toEpochMilli();
     }
 }
