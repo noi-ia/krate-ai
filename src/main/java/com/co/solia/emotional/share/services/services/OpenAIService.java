@@ -1,8 +1,10 @@
 package com.co.solia.emotional.share.services.services;
 
+import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletion;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -33,4 +35,20 @@ public interface OpenAIService {
      * @return {@link Optional} of {@link ChatCompletion}.
      */
     Optional<ChatCompletion> clean(String message);
+
+    /**
+     * generate the keyphrases.
+     * @param emotion related to generate the keyphrases.
+     * @param messages messages where comes from the keyphrases.
+     * @param emotions emotions associated to the messages.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
+    Optional<ChatCompletion> getKeyphrases(final String emotion, final List<String> messages, final Map<String, Double> emotions);
+
+    /**
+     * generate the keyphrases.
+     * @param keyphraseRq a wrapper for the keyphrases.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
+    Optional<ChatCompletion> getKeyphrases(final KeyphraseOpenaiRqDto keyphraseRq);
 }

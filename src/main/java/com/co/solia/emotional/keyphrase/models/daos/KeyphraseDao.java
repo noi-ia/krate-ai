@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.models.daos;
+package com.co.solia.emotional.keyphrase.models.daos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,19 +9,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
- * Entity to save in db the batch emotional process.
+ * Entity to save in db the keyphrase process.
  *
  * @author luis.bolivar
  */
 @Builder
 @Getter
-@Document("emotionalUnique")
+@Document("keyphrase")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmotionalUniqueDao {
+public class KeyphraseDao {
 
     /**
      * identifier.
@@ -35,9 +36,14 @@ public class EmotionalUniqueDao {
     private List<String> messages;
 
     /**
-     * result of emotional processing.
+     * id of emotional result.
      */
-    private String estimations;
+    private UUID idEe;
+
+    /**
+     * result of emotional estimation.
+     */
+    private String emotionEstimation;
 
     /**
      * user identifier that start emotional estimation.
@@ -47,7 +53,7 @@ public class EmotionalUniqueDao {
     /**
      * tokens of message representing.
      */
-    private Integer tokens;
+    private Map<String, Integer> tokens;
 
     /**
      * is active this processing to still reviewing.
@@ -76,4 +82,13 @@ public class EmotionalUniqueDao {
      */
     private String fingerPrintOpenai;
 
+    /**
+     * keyphrases associated with the messages.
+     */
+    private List<String> keyphrases;
+
+    /**
+     * emotion associated to the keyphrases.
+     */
+    private String emotion;
 }

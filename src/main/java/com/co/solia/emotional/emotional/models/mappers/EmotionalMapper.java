@@ -41,7 +41,7 @@ public class EmotionalMapper {
      * map from {@link ChatCompletion} to {@link EmotionalDao}.
      *
      * @param message  from request.
-     * @param resultEE result from openai call.
+     * @param chat result from openai call.
      * @param userId   user identifier.
      * @param duration duration of openai call.
      * @param idBEE    batch id.
@@ -49,12 +49,12 @@ public class EmotionalMapper {
      */
     public static Optional<EmotionalDao> fromChatCompletionToDao(
             final String message,
-            final ChatCompletion resultEE,
+            final ChatCompletion chat,
             final UUID userId,
             final long duration,
             final UUID idBEE,
             final UUID idEE) {
-        return Stream.of(resultEE)
+        return Stream.of(chat)
                         .filter(Objects::nonNull)
                                 .filter(result -> result.choices() != null)
                                         .filter(result -> !result.choices().isEmpty())
@@ -135,7 +135,7 @@ public class EmotionalMapper {
     public static Map<String, Double> getEmotionsFromChatCompletion(final ChatCompletion chatCompletion) {
         Map<String, Double> emotions = Map.of();
         try {
-            emotions = new Gson().fromJson(chatCompletion.choices().get(0).message().content(), Map.class);
+                emotions = new Gson().fromJson(chatCompletion.choices().get(0).message().content(), Map.class);
         } catch (Exception e) {
             log.error("[getEmotionsFromChatCompletion]: error parsing data from json: {}", e.getMessage());
         }

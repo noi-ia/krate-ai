@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.utils;
+package com.co.solia.emotional.share.models.validators;
 
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;
@@ -16,14 +16,14 @@ import java.util.stream.Stream;
  */
 @UtilityClass
 @Slf4j
-public class ControllerValidator {
+public class ServiceValidator {
     /**
      * method to validate the message to be processed by emotional estimation.
      * @param message to validate.
      */
     public static void validateMessage(final String message, final String endpoint) {
         Stream.of(message)
-                .filter(BasicUtils::isValidString)
+                .filter(BasicValidator::isValidString)
                 .findFirst()
                 .ifPresentOrElse(validMessage ->
                                 log.info("[validateMessage]: message is valid to process.")
@@ -71,7 +71,7 @@ public class ControllerValidator {
                             log.error("[validateMessages]: Error in messages, validate them.");
                             throw BadRequestException.builder()
                                     .message("the message to compute are invalid.")
-                                    .endpoint("/emotional/compute/")
+                                    .endpoint(endpoint)
                                     .build();
                         });
     }

@@ -1,4 +1,4 @@
-package com.co.solia.emotional.share.controllers.validators;
+package com.co.solia.emotional.share.models.validators;
 
 
 import com.co.solia.emotional.share.models.dtos.rs.DefaultRsDto;

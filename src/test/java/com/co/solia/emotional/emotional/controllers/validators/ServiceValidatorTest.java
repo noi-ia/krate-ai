@@ -1,6 +1,6 @@
 package com.co.solia.emotional.emotional.controllers.validators;
 
-import com.co.solia.emotional.emotional.utils.ControllerValidator;
+import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,12 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 /**
- * test for {@link ControllerValidator}.
+ * test for {@link ServiceValidator}.
  *
  * @author luis.bolivar
  */
 @ExtendWith(MockitoExtension.class)
-public class ControllerValidatorTest {
+public class ServiceValidatorTest {
 
     /**
      * happy path, validate message.
@@ -23,7 +23,7 @@ public class ControllerValidatorTest {
     @Test
     void givenMessageWhenValidateMessageThenValidateOk(){
         final String message = "I'm happy.";
-        ControllerValidator.validateMessage(message, "val");
+        ServiceValidator.validateMessage(message, "val");
         Assertions.assertTrue(Boolean.TRUE, "The message was successfully validated.");
     }
 
@@ -34,7 +34,7 @@ public class ControllerValidatorTest {
     void givenMessageNullWhenValidateMessageThenValidateOk(){
         final String message = null;
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> ControllerValidator.validateMessage(message, "val"));
+                () -> ServiceValidator.validateMessage(message, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");
@@ -49,7 +49,7 @@ public class ControllerValidatorTest {
     void givenMessageBlankWhenValidateMessageThenValidateOk(){
         final String message = "    ";
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> ControllerValidator.validateMessage(message, "val"));
+                () -> ServiceValidator.validateMessage(message, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");
@@ -64,7 +64,7 @@ public class ControllerValidatorTest {
     void givenMessageEmptyWhenValidateMessageThenValidateOk(){
         final String message = "";
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> ControllerValidator.validateMessage(message, "val"));
+                () -> ServiceValidator.validateMessage(message, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");
@@ -78,7 +78,7 @@ public class ControllerValidatorTest {
     @Test
     void givenIdEeWhenValidateIdThenValidateOk(){
         final UUID idEe = UUID.randomUUID();
-        ControllerValidator.validateId(idEe, "val");
+        ServiceValidator.validateId(idEe, "val");
         Assertions.assertTrue(Boolean.TRUE, "The endpoint is valid");
     }
 
@@ -89,7 +89,7 @@ public class ControllerValidatorTest {
     void givenIdNullEeWhenValidateIdThenValidateOk(){
         final UUID idEe = null;
         final BadRequestException bre = Assertions.assertThrows(BadRequestException.class,
-                () -> ControllerValidator.validateId(idEe, "val"));
+                () -> ServiceValidator.validateId(idEe, "val"));
         Assertions.assertNotNull(bre, "the exception is not null.");
         Assertions.assertNotNull(bre.getMessage(), "the exception message is not null.");
         Assertions.assertNotNull(bre.getEndpoint(), "the exception endpoint is not null.");

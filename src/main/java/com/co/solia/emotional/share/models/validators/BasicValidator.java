@@ -1,4 +1,4 @@
-package com.co.solia.emotional.emotional.utils;
+package com.co.solia.emotional.share.models.validators;
 
 import lombok.experimental.UtilityClass;
 
@@ -10,7 +10,7 @@ import java.time.Instant;
  * @author luis.bolivar.
  */
 @UtilityClass
-public class BasicUtils {
+public class BasicValidator {
 
     /**
      * validate the string field.
@@ -32,10 +32,19 @@ public class BasicUtils {
     }
 
     /**
+     * get duration of openai processing.
+     * @param start date.
+     * @return {@link Long} total duration of openai processing.
+     */
+    public static long getDuration(long start) {
+        return getNow() - start;
+    }
+
+    /**
      * get the milliseconds to start a process.
      * @return a long duration.
      */
-    public static long getStart() {
+    public static long getNow() {
         return Instant.now().toEpochMilli();
     }
 }

@@ -1,0 +1,15 @@
+### create a emotional unique comput
+POST localhost:8080/1/keyphrase/compute/FELICIDAD
+Content-Type: application/json
+
+{
+  "messages": [
+    "No estoy seguro de qué son",
+    "es buenísimo de sabor y si lo combinas con ejercicios, seguro que te funciona mucho más",
+    "No sé si tiene efectividad",
+    "no los sustituyo, complemento"
+  ]
+}
+
+### Get by id.
+GET http://localhost:8080/1/keyphrase/compute/f604a7bd-bef2-4a05-bd49-4b77e6b71703

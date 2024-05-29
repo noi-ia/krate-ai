@@ -7,7 +7,7 @@ import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalBatchRqDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
-import com.co.solia.emotional.emotional.utils.ControllerValidator;
+import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -43,7 +43,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      */
     @PostMapping("/compute/")
     public ResponseEntity<EmotionalRsDto> compute(@RequestBody final EmotionalRqDto emotionalMessage) {
-        ControllerValidator.validateMessage(emotionalMessage.getMessage(), "/emotional/compute/");
+        ServiceValidator.validateMessage(emotionalMessage.getMessage(), "/emotional/compute/");
         return emotionalService.compute(emotionalMessage)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
@@ -58,7 +58,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      */
     @PostMapping("/compute/batch/")
     public ResponseEntity<EmotionalBatchRsDto> computeBatch(@RequestBody final EmotionalBatchRqDto messages) {
-        ControllerValidator.validateMessages(messages.getMessages(), "/emotional/compute/batch/");
+        ServiceValidator.validateMessages(messages.getMessages(), "/emotional/compute/batch/");
         return emotionalService.computeList(messages)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
@@ -73,7 +73,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      */
     @PostMapping("/compute/unique/")
     public ResponseEntity<EmotionalUniqueRsDto> computeUnique(@RequestBody final EmotionalBatchRqDto messages) {
-        ControllerValidator.validateMessages(messages.getMessages(), "/emotional/compute/unique/");
+        ServiceValidator.validateMessages(messages.getMessages(), "/emotional/compute/unique/");
         return emotionalService.computeUnique(messages)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
@@ -88,7 +88,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      */
     @GetMapping("/compute/{id}")
     public ResponseEntity<EmotionalRsDto> getById(@PathVariable("id") final UUID id) {
-        ControllerValidator.validateId(id, "/emotional/compute/{id}");
+        ServiceValidator.validateId(id, "/emotional/compute/{id}");
         return emotionalService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> InternalServerException.builder()
@@ -104,7 +104,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      */
     @GetMapping("/compute/batch/{id}")
     public ResponseEntity<EmotionalBatchRsDto> getByBatchECId(@PathVariable("id") final UUID id){
-        ControllerValidator.validateId(id, "/emotional/compute/batch/{id}");
+        ServiceValidator.validateId(id, "/emotional/compute/batch/{id}");
         return emotionalService.getByBatchId(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> NotFoundException.builder()
@@ -120,7 +120,7 @@ public class EmotionalController implements EmotionalControllerDocs {
      */
     @GetMapping("/compute/unique/{id}")
     public ResponseEntity<EmotionalUniqueRsDto> getByUniqueId(@PathVariable("id") final UUID id) {
-        ControllerValidator.validateId(id, "/emotional/compute/unique/");
+        ServiceValidator.validateId(id, "/emotional/compute/unique/");
         return emotionalService.getByUniqueId(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> NotFoundException.builder()

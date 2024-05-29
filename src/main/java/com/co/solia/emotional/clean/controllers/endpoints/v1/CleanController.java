@@ -5,7 +5,7 @@ import com.co.solia.emotional.clean.models.dtos.rq.CleanBatchRqDto;
 import com.co.solia.emotional.clean.models.dtos.rq.CleanRqDto;
 import com.co.solia.emotional.clean.models.dtos.rs.CleanBatchRsDto;
 import com.co.solia.emotional.clean.models.dtos.rs.CleanRsDto;
-import com.co.solia.emotional.emotional.utils.ControllerValidator;
+import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.clean.services.services.CleanService;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
@@ -44,7 +44,7 @@ public class CleanController implements CleanControllerDocs {
      */
     @PostMapping("/compute/")
     public ResponseEntity<CleanRsDto> clean(@RequestBody final CleanRqDto cleanRq) {
-        ControllerValidator.validateMessage(cleanRq.getMessage(), "/1/clean/compute/");
+        ServiceValidator.validateMessage(cleanRq.getMessage(), "/1/clean/compute/");
         return cleanService.clean(cleanRq)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> {
@@ -63,7 +63,7 @@ public class CleanController implements CleanControllerDocs {
      */
     @GetMapping("/compute/{id}")
     public ResponseEntity<CleanRsDto> getById(@PathVariable("id") final UUID id) {
-        ControllerValidator.validateId(id, "/1/clean/compute/");
+        ServiceValidator.validateId(id, "/1/clean/compute/");
         return cleanService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> {
@@ -82,7 +82,7 @@ public class CleanController implements CleanControllerDocs {
      */
     @PostMapping("/compute/batch/")
     public ResponseEntity<CleanBatchRsDto> cleanList(@RequestBody final CleanBatchRqDto cleanRq) {
-        ControllerValidator.validateMessages(cleanRq.getMessages(), "/1/clean/compute/batch");
+        ServiceValidator.validateMessages(cleanRq.getMessages(), "/1/clean/compute/batch");
         return cleanService.cleanList(cleanRq)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> {
@@ -101,7 +101,7 @@ public class CleanController implements CleanControllerDocs {
      */
     @GetMapping("/compute/batch/{id}")
     public ResponseEntity<CleanBatchRsDto> getByBatchId(@PathVariable("id") final UUID id) {
-        ControllerValidator.validateId(id, "/1/clean/compute/");
+        ServiceValidator.validateId(id, "/1/clean/compute/");
         return cleanService.getByBatchId(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> {

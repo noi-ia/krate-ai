@@ -1,6 +1,9 @@
 package com.co.solia.emotional.share.services.impls;
 
+import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
+import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.share.services.services.OpenAIService;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest;
@@ -52,10 +55,18 @@ public class OpenaiServiceImpl implements OpenAIService {
     private final String PROMPT_CLEAN;
 
     /**
+     * prompt to clean the comment.
+     */
+    private final String PROMPT_KEYPHRASE;
+
+    /**
      * openai model used.
      */
     private final String OPENAI_MODEL;
 
+    /**
+     * json format return from openai.
+     */
     private static final String JSOM_FORMAT_OPENAI = "json_object";
 
     @Autowired
@@ -64,14 +75,15 @@ public class OpenaiServiceImpl implements OpenAIService {
             @Value("${solia.emotional.openai.prompt.emotional}") final String promptEmotional,
             @Value("${solia.emotional.openai.prompt.emotional.unique}") final String promptEmotionalUnique,
             @Value("${solia.emotional.openai.model}") final String openaiModel,
-            @Value("${solia.emotional.openai.prompt.clean}") final String promptClean){
+            @Value("${solia.emotional.openai.prompt.clean}") final String promptClean,
+            @Value("${solia.emotional.openai.prompt.keyphrase}") final String promptKeyphrase){
         this.OPENAI_APIKEY = openaiApikey;
         this.PROMPT_EMOTIONAL = promptEmotional;
         this.PROMPT_EMOTIONAL_UNIQUE = promptEmotionalUnique;
         this.OPENAI_MODEL = openaiModel;
         this.PROMPT_CLEAN = promptClean;
+        this.PROMPT_KEYPHRASE = promptKeyphrase;
     }
-
 
     /**
      * {@inheritDoc}
@@ -81,7 +93,7 @@ public class OpenaiServiceImpl implements OpenAIService {
     @Override
     public Optional<ChatCompletion> emotionalCompute(final String message) {
         log.info("[emotionalEstimation]: starting emotional compute.");
-        return callOpenAiEE(message);
+        return callEE(message);
     }
 
     /**
@@ -92,7 +104,7 @@ public class OpenaiServiceImpl implements OpenAIService {
     @Override
     public Optional<ChatCompletion> emotionalComputeUnique(final List<String> messages) {
         log.info("[emotionalComputeUnique]: starting unique emotional compute: {}", messages.size());
-        return callOpenAiEEU(messages);
+        return callEEU(messages);
     }
 
     /**
@@ -103,7 +115,35 @@ public class OpenaiServiceImpl implements OpenAIService {
     @Override
     public Optional<ChatCompletion> clean(final String messages) {
         log.info("[clean]: starting clean message: {}", messages);
-        return callOpenAiClean(messages);
+        return callClean(messages);
+    }
+
+    /**
+     * {@inheritDoc}.
+     * @param emotion related to generate the keyphrases.
+     * @param messages messages where comes from the keyphrases.
+     * @param emotions emotions associated to the messages.
+     * @return
+     */
+    @Override
+    public Optional<ChatCompletion> getKeyphrases(
+            final String emotion, final List<String> messages, final Map<String, Double> emotions) {
+        final String jsonToSend = new Gson().toJson(KeyphraseOpenaiRqDto.builder()
+                        .messages(messages)
+                        .emotions(emotions)
+                        .emotion(EmotionEnum.valueOf(emotion))
+                .build());
+        return callKeyphrase(jsonToSend);
+    }
+
+    /**
+     * {@inheritDoc}.
+     * @param keyphraseRq a wrapper for the keyphrases.
+     * @return
+     */
+    @Override
+    public Optional<ChatCompletion> getKeyphrases(final KeyphraseOpenaiRqDto keyphraseRq) {
+        return getKeyphrases(keyphraseRq.getEmotion().toString(), keyphraseRq.getMessages(), keyphraseRq.getEmotions());
     }
 
     /**
@@ -111,14 +151,14 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param messages to estimate.
      * @return {@link Optional} of {@link ChatCompletion}.
      */
-    private Optional<ChatCompletion> callOpenAiEEU(final List<String> messages) {
+    private Optional<ChatCompletion> callEEU(final List<String> messages) {
         Optional<ChatCompletion> result = Optional.empty();
         try {
             final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
                     .chatCompletionEntity(getEmotionalUniqueChatRequest(messages.toString()));
             result = mapResult(response);
         } catch (Exception e) {
-            log.error("[callOpenAiEEU]: Error getting response from OpenAI: {}", e.getMessage());
+            log.error("[callEEU]: Error getting response from OpenAI: {}", e.getMessage());
         }
 
         return result;
@@ -129,14 +169,32 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param message to estimate.
      * @return {@link Optional} of {@link ChatCompletion}.
      */
-    private Optional<ChatCompletion> callOpenAiClean(final String message) {
+    private Optional<ChatCompletion> callClean(final String message) {
         Optional<ChatCompletion> result = Optional.empty();
         try {
             final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
                     .chatCompletionEntity(getCleanChatRequest(message));
             result = mapResult(response);
         } catch (Exception e) {
-            log.error("[callOpenAiClean]: Error getting response from OpenAI: {}", e.getMessage());
+            log.error("[callClean]: Error getting response from OpenAI: {}", e.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * call to OpenAI api.
+     * @param message to estimate the keyphrase.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
+    private Optional<ChatCompletion> callKeyphrase(final String message) {
+        Optional<ChatCompletion> result = Optional.empty();
+        try {
+            final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
+                    .chatCompletionEntity(getKeyphraseChatRequest(message));
+            result = mapResult(response);
+        } catch (Exception e) {
+            log.error("[callKeyphrase]: Error getting response from OpenAI: {}", e.getMessage());
         }
 
         return result;
@@ -147,14 +205,14 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param message to estimate.
      * @return {@link Optional} of {@link ChatCompletion}.
      */
-    private Optional<ChatCompletion> callOpenAiEE(final String message) {
+    private Optional<ChatCompletion> callEE(final String message) {
         Optional<ChatCompletion> result = Optional.empty();
         try {
             final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
                     .chatCompletionEntity(getChatRequest(message));
             result = mapResult(response);
         } catch (Exception e) {
-            log.error("[callOpenAiEE]: Error getting response from OpenAI: {}", e.getMessage());
+            log.error("[callEE]: Error getting response from OpenAI: {}", e.getMessage());
         }
 
         return result;
@@ -214,8 +272,19 @@ public class OpenaiServiceImpl implements OpenAIService {
     private ChatCompletionRequest getCleanChatRequest(final String message) {
         final String model = getModel();
         final Float temperature = 0.0f;
-        final ResponseFormat responseFormat = new ResponseFormat(JSOM_FORMAT_OPENAI);
         return getChatRequest(getCleanMessages(message), model, temperature, null);
+    }
+
+    /**
+     * method to create the request to clean compute.
+     * @param message from the user to get clean comment.
+     * @return {@link ChatCompletionRequest}
+     */
+    private ChatCompletionRequest getKeyphraseChatRequest(final String message) {
+        final String model = getModel();
+        final Float temperature = 0.0f;
+        final ResponseFormat responseFormat = new ResponseFormat(JSOM_FORMAT_OPENAI);
+        return getChatRequest(getKeyphraseMessages(message), model, temperature, responseFormat);
     }
 
     /**
@@ -335,7 +404,21 @@ public class OpenaiServiceImpl implements OpenAIService {
         } catch (Exception e) {
             log.error("[getCleanMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
         }
+        return messages;
+    }
 
+    /**
+     * method to get the message from clean to send to openai.
+     * @param message to create to get the user message.
+     * @return {@link List} of {@link ChatCompletionMessage}.
+     */
+    private List<ChatCompletionMessage> getKeyphraseMessages(final String message){
+        List<ChatCompletionMessage> messages = new ArrayList<>();
+        try {
+            messages = List.of(getSysMessKeyphrase(), getUserMessage(message));
+        } catch (Exception e) {
+            log.error("[getKeyphraseMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
+        }
         return messages;
     }
 
@@ -378,6 +461,14 @@ public class OpenaiServiceImpl implements OpenAIService {
      */
     private ChatCompletionMessage getSysMessClean(){
         return new ChatCompletionMessage(PROMPT_CLEAN, Role.SYSTEM);
+    }
+
+    /**
+     * method to get the system message in {@link ChatCompletionMessage} format to clean.
+     * @return {@link ChatCompletionMessage}.
+     */
+    private ChatCompletionMessage getSysMessKeyphrase(){
+        return new ChatCompletionMessage(PROMPT_KEYPHRASE, Role.SYSTEM);
     }
 
 }
