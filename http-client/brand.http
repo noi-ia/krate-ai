@@ -1,0 +1,13 @@
+### create a new brand
+POST localhost:8080/1/brand/
+Content-Type: application/json
+
+{
+  "name": "solia",
+  "description": "Es una empresa que democratiza la inteligencia artificial en latinoamerica",
+  "competitors": "https://www.fake.com, https://www.fake2.com, https://www.fake3.com"
+}
+
+
+### get a brand by id
+GET localhost:8080/1/brand/c0889c1a-642a-400a-b1ff-5a2c0f7c63cd
