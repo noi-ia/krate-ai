@@ -41,7 +41,7 @@ public class KeyphraseRsDto {
     /**
      * emotions related to the messages.
      */
-    private Map<String, Double> emotions;
+    private EmotionalDto emotions;
 
     /**
      * list resulting to get the keyphrases.

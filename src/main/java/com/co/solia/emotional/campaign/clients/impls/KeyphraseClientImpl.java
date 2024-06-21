@@ -60,7 +60,7 @@ public class KeyphraseClientImpl implements KeyphraseClient {
         log.info("[generateKeyphrases]: call the keyphrases.");
         final String url = getKeyphraseUrl(emotion);
         getRq(request, url);
-        return Optional.empty();
+        return call(getRq(request, url));
     }
 
     /**

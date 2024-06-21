@@ -6,6 +6,7 @@ import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
 import com.co.solia.emotional.campaign.services.services.CampaignService;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/1/campaign")
 @AllArgsConstructor
+@Slf4j
 public class CampaignController implements CampaignControllerDoc {
 
     /**
@@ -35,10 +37,13 @@ public class CampaignController implements CampaignControllerDoc {
     @PostMapping("/compute/")
     @Override
     public ResponseEntity<CampaignRsDto> compute(@RequestBody final CampaignRqDto request) {
-        return campaignService.compute(request, "amor")
+        return campaignService.compute(request)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> InternalServerException.builder()
-                        .message("The compute process failed, try again.")
-                        .endpoint("/campaign/compute/").build());
+                .orElseGet(() -> {
+                    log.error("[compute]: The compute process failed, try again.");
+                    throw InternalServerException.builder()
+                            .message("The compute process failed, try again.")
+                            .endpoint("/campaign/compute/").build();
+                });
     }
 }

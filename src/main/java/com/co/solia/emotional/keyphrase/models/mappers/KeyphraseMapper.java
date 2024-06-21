@@ -5,6 +5,7 @@ import com.co.solia.emotional.keyphrase.models.dtos.rq.EmotionalClientRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalClientRsDto;
+import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.google.gson.Gson;
@@ -167,13 +168,30 @@ public class KeyphraseMapper {
      * @return {@link Optional} of {@link KeyphraseRsDto}.
      */
     public static Optional<KeyphraseRsDto> getRsFromDao(final KeyphraseDao dao) {
-        Map result = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
+        Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
         return Optional.of(KeyphraseRsDto.builder()
                         .keyphrases(dao.getKeyphrases())
                         .emotion(EmotionEnum.valueOf(dao.getEmotion()))
                         .id(dao.getId())
                         .messages(dao.getMessages())
-                        .emotions(result)
+                        .emotions(EmotionalDto.builder().emotions(emotions).build())
+                .build());
+    }
+
+    /**
+     * get {@link KeyphraseRsDto} from an {@link KeyphraseDao}.
+     * @param dao to get the dto.
+     * @param emotionId emotional identifier.
+     * @return {@link Optional} of {@link KeyphraseRsDto}.
+     */
+    public static Optional<KeyphraseRsDto> getRsFromDao(final KeyphraseDao dao, final UUID emotionId) {
+        Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
+        return Optional.of(KeyphraseRsDto.builder()
+                .keyphrases(dao.getKeyphrases())
+                .emotion(EmotionEnum.valueOf(dao.getEmotion()))
+                .id(dao.getId())
+                .messages(dao.getMessages())
+                .emotions(EmotionalDto.builder().emotions(emotions).id(emotionId).build())
                 .build());
     }
 }

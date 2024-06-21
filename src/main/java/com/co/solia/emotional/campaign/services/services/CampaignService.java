@@ -16,10 +16,9 @@ public interface CampaignService {
     /**
      * compute for generate the campaigns.
      * @param request to generate the campaign.
-     * @param emotion to generate the campaigns.
      * @return {@link Optional} of {@link CampaignRsDto}.
      */
-    Optional<CampaignRsDto> compute(CampaignRqDto request, String emotion);
+    Optional<CampaignRsDto> compute(CampaignRqDto request);
 
     /**
      * save a campaign.

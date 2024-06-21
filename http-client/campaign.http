@@ -1,0 +1,9 @@
+### create a new campaign
+POST localhost:8080/1/campaign/compute/
+Content-Type: application/json
+
+{
+  "keyphrase": "La efectividad es algo que puede generar incertidumbre",
+  "brandId": "c0889c1a-642a-400a-b1ff-5a2c0f7c63cd",
+  "emotionalId": "0762b7c8-b639-46b5-affd-7d0ad1c56eca"
+}

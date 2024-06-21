@@ -93,7 +93,7 @@ public class KeyphraseServiceImpl implements KeyphraseService {
         log.info("[computeKeyphrases]: ready to get the keyphrases.");
         return openAIService.getKeyphrases(KeyphraseMapper.getKeyphraseFromEmotionalRs(emotionalRs, emotion))
                 .flatMap(chat -> mapAndSave(emotionalRs, emotion, userId, chat, id, getDuration(start))
-                            .flatMap(KeyphraseMapper::getRsFromDao));
+                            .flatMap(dao -> KeyphraseMapper.getRsFromDao(dao, emotionalRs.getId())));
     }
 
     /**

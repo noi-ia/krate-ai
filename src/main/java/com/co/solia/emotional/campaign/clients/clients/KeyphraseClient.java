@@ -8,7 +8,7 @@ import java.util.Optional;
 
 /**
  * interface of keyphrase call.
- *
+ * TODO: usarlo cuando haga la opción de todo el proce
  * @author luis.bolivar.
  */
 public interface KeyphraseClient {

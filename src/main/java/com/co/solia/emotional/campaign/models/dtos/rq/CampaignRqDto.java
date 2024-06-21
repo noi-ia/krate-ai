@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * request to generate campaigns.
@@ -19,7 +20,17 @@ import java.util.List;
 public class CampaignRqDto {
 
     /**
-     * list of messages.
+     * keyphrase to generate the campaign.
      */
-    private List<String> messages;
+    private String keyphrase;
+
+    /**
+     * brand identifier to add context to the campaign.
+     */
+    private UUID brandId;
+
+    /**
+     * emotional estimation identifier to add context to the campaign.
+     */
+    private UUID emotionalId;
 }
