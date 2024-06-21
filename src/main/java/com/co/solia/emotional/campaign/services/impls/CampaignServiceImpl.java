@@ -1,8 +1,6 @@
 package com.co.solia.emotional.campaign.services.impls;
 
 import com.co.solia.emotional.campaign.clients.clients.BrandClient;
-import com.co.solia.emotional.campaign.clients.clients.EmotionalClient;
-import com.co.solia.emotional.campaign.clients.clients.KeyphraseClient;
 import com.co.solia.emotional.campaign.models.daos.CampaignDao;
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.BrandClientRsDto;
@@ -10,6 +8,7 @@ import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
 import com.co.solia.emotional.campaign.models.mappers.CampaignMapper;
 import com.co.solia.emotional.campaign.models.repos.CampaignRepo;
 import com.co.solia.emotional.campaign.services.services.CampaignService;
+import com.co.solia.emotional.share.clients.clients.EmotionalClient;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.validators.BasicValidator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
@@ -43,7 +42,7 @@ public class CampaignServiceImpl implements CampaignService {
     private CampaignRepo campaignRepo;
 
     /**
-     * dependency on {@link KeyphraseClient}.
+     * dependency on {@link EmotionalClient}.
      */
     private EmotionalClient emotionalClient;
 

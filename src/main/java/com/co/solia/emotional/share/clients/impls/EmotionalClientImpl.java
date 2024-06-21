@@ -1,9 +1,9 @@
-package com.co.solia.emotional.keyphrase.clients.impls;
+package com.co.solia.emotional.share.clients.impls;
 
-import com.co.solia.emotional.emotional.clients.impls.CleanClientImpl;
-import com.co.solia.emotional.keyphrase.clients.clients.EmotionalClient;
+import com.co.solia.emotional.campaign.models.mappers.EmotionalMapper;
+import com.co.solia.emotional.share.clients.clients.EmotionalClient;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.EmotionalClientRqDto;
-import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalClientRsDto;
+import com.co.solia.emotional.share.models.dtos.rs.EmotionalClientRsDto;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,6 +66,62 @@ public class EmotionalClientImpl implements EmotionalClient {
         return callEmotional(rq)
                 .filter(Response::isSuccessful)
                 .flatMap(EmotionalClientImpl::getResponse);
+    }
+
+    /**
+     * get a emotional processing by id.
+     *
+     * @param id to get the emotional processing.
+     * @return {@link Optional} of {@link EmotionalClientRsDto}.
+     */
+    @Override
+    public Optional<EmotionalClientRsDto> getById(final UUID id) {
+        final Request rq = getRqToGetById(getUrlGetById(id));
+        return callGetById(rq).flatMap(rs -> {
+            log.info("[getById]: response: {}", rs.body());
+            return EmotionalMapper.getFromRs(rs);
+        });
+    }
+
+    /**
+     * call the keyphrase endpoint.
+     * @param rq for call.
+     * @return {@link Optional} of {@link Response}.
+     */
+    private Optional<Response> callGetById(final Request rq) {
+        Optional<Response> result = Optional.empty();
+        try {
+            final Call call = client.newCall(rq);
+            final Response response = call.execute();
+            result = Optional.of(response);
+            log.info("[callGetById] call to keyphrase ok.");
+        } catch(Exception e) {
+            log.error("[callGetById]: error getting the emotional processing by id error: {}", e.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * get the request to call emotional api.
+     * @param url to consume the api.
+     * @return {@link Request}.
+     */
+    private Request getRqToGetById(final String url) {
+        return new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("Content-Type", "application/json")
+                .build();
+    }
+
+    /**
+     * get the url to call the emotional to get by id.
+     * @param id to get the emotional processing.
+     * @return {@link String} with the url.
+     */
+    private String getUrlGetById(final UUID id) {
+        return emotionalUrl + "compute/unique/" + id;
     }
 
     /**

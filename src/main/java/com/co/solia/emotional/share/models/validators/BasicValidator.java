@@ -77,6 +77,6 @@ public class BasicValidator {
                             .endpoint("/campaign/compute")
                             .message("the field " + field +  " is invalid, please check it out")
                             .build();
-                })
+                });
     }
 }

@@ -4,7 +4,7 @@ import com.co.solia.emotional.keyphrase.models.daos.KeyphraseDao;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.EmotionalClientRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
-import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalClientRsDto;
+import com.co.solia.emotional.share.models.dtos.rs.EmotionalClientRsDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
@@ -168,7 +168,7 @@ public class KeyphraseMapper {
      * @return {@link Optional} of {@link KeyphraseRsDto}.
      */
     public static Optional<KeyphraseRsDto> getRsFromDao(final KeyphraseDao dao) {
-        Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
+        final Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
         return Optional.of(KeyphraseRsDto.builder()
                         .keyphrases(dao.getKeyphrases())
                         .emotion(EmotionEnum.valueOf(dao.getEmotion()))
@@ -185,7 +185,7 @@ public class KeyphraseMapper {
      * @return {@link Optional} of {@link KeyphraseRsDto}.
      */
     public static Optional<KeyphraseRsDto> getRsFromDao(final KeyphraseDao dao, final UUID emotionId) {
-        Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
+        final Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
         return Optional.of(KeyphraseRsDto.builder()
                 .keyphrases(dao.getKeyphrases())
                 .emotion(EmotionEnum.valueOf(dao.getEmotion()))

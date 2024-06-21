@@ -1,9 +1,9 @@
 package com.co.solia.emotional.keyphrase.services.impls;
 
-import com.co.solia.emotional.keyphrase.clients.clients.EmotionalClient;
+import com.co.solia.emotional.share.clients.clients.EmotionalClient;
 import com.co.solia.emotional.keyphrase.models.daos.KeyphraseDao;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
-import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalClientRsDto;
+import com.co.solia.emotional.share.models.dtos.rs.EmotionalClientRsDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.keyphrase.models.mappers.KeyphraseMapper;

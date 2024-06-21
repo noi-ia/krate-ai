@@ -1,6 +1,5 @@
-package com.co.solia.emotional.keyphrase.models.dtos.rs;
+package com.co.solia.emotional.share.models.dtos.rs;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

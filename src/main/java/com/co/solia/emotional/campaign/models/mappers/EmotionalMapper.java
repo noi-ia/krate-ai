@@ -1,6 +1,6 @@
 package com.co.solia.emotional.campaign.models.mappers;
 
-import com.co.solia.emotional.campaign.models.dtos.rs.EmotionalClientRsDto;
+import com.co.solia.emotional.share.models.dtos.rs.EmotionalClientRsDto;
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
