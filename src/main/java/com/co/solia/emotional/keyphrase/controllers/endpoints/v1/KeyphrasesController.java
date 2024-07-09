@@ -4,7 +4,7 @@ import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.keyphrase.controllers.docs.KeyphraseControllerDocs;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
-import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
+import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphrasesRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.keyphrase.services.services.KeyphraseService;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
@@ -23,13 +23,13 @@ import java.util.UUID;
 /**
  * endpoints of keyphrase.
  *
- * @author luis.bolivar
+ * @author luis.bolivar.
  */
 @RestController
 @RequestMapping("/1/keyphrase")
 @Slf4j
 @AllArgsConstructor
-public class KeyphraseController implements KeyphraseControllerDocs {
+public class KeyphrasesController implements KeyphraseControllerDocs {
 
     /**
      * dependency on {@link KeyphraseService}.
@@ -44,8 +44,8 @@ public class KeyphraseController implements KeyphraseControllerDocs {
      * @return
      */
     @PostMapping("/compute/{emotion}")
-    public ResponseEntity<KeyphraseRsDto> compute(@RequestBody final KeyphraseRqDto keyphraseRq,
-                                                  @PathVariable("emotion") final EmotionEnum emotion) {
+    public ResponseEntity<KeyphrasesRsDto> compute(@RequestBody final KeyphraseRqDto keyphraseRq,
+                                                   @PathVariable("emotion") final EmotionEnum emotion) {
         ServiceValidator.validateMessages(keyphraseRq.getMessages(), "/keyphrase/compute/{emotion}");
         return keyphraseService.compute(keyphraseRq, emotion)
                 .map(ResponseEntity::ok)
@@ -62,10 +62,10 @@ public class KeyphraseController implements KeyphraseControllerDocs {
      * get a keyphrase by id.
      *
      * @param id {@link UUID} to get the keyphrase.
-     * @return {@link ResponseEntity} of {@link KeyphraseRsDto}.
+     * @return {@link ResponseEntity} of {@link KeyphrasesRsDto}.
      */
     @GetMapping("/compute/{id}")
-    public ResponseEntity<KeyphraseRsDto> getById(@PathVariable("id") final UUID id) {
+    public ResponseEntity<KeyphrasesRsDto> getById(@PathVariable("id") final UUID id) {
         ServiceValidator.validateId(id, "/keyphrase/compute/{id}");
         return keyphraseService.getById(id)
                 .map(ResponseEntity::ok)

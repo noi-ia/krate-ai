@@ -1,7 +1,7 @@
 package com.co.solia.emotional.keyphrase.controllers.docs;
 
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
-import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
+import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphrasesRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +23,7 @@ public interface KeyphraseControllerDocs {
     /**
      * get the keyphrase by id.
      * @param id to get the keyphrase.
-     * @return {@link ResponseEntity} of {@link KeyphraseRsDto}.
+     * @return {@link ResponseEntity} of {@link KeyphrasesRsDto}.
      */
     @Operation(
             summary = "get a previous keyphrase processing by id.",
@@ -37,13 +37,13 @@ public interface KeyphraseControllerDocs {
                     required = true,
                     in = ParameterIn.PATH),
     })
-    ResponseEntity<KeyphraseRsDto> getById(UUID id);
+    ResponseEntity<KeyphrasesRsDto> getById(UUID id);
 
     /**
      * compute the keyphrase.
      * @param keyphraseRq request to process.
      * @param emotion to process the messages.
-     * @return {@link ResponseEntity} of {@link KeyphraseRsDto}.
+     * @return {@link ResponseEntity} of {@link KeyphrasesRsDto}.
      */
     @Operation(
             summary = "estimate the keyphrases associated to the messages.",
@@ -57,5 +57,5 @@ public interface KeyphraseControllerDocs {
                     required = true,
                     in = ParameterIn.PATH),
     })
-    ResponseEntity<KeyphraseRsDto> compute(KeyphraseRqDto keyphraseRq, EmotionEnum emotion);
+    ResponseEntity<KeyphrasesRsDto> compute(KeyphraseRqDto keyphraseRq, EmotionEnum emotion);
 }

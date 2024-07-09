@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -23,7 +20,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KeyphraseDao {
-
     /**
      * identifier.
      */
@@ -31,64 +27,12 @@ public class KeyphraseDao {
     private UUID id;
 
     /**
-     * message processed.
+     * keyphrases process identifier.
      */
-    private List<String> messages;
+    private UUID idKeyphrases;
 
     /**
-     * id of emotional result.
+     * a keyphrase.
      */
-    private UUID idEe;
-
-    /**
-     * result of emotional estimation.
-     */
-    private String emotionEstimation;
-
-    /**
-     * user identifier that start emotional estimation.
-     */
-    private UUID idUser;
-
-    /**
-     * tokens of message representing.
-     */
-    private Map<String, Integer> tokens;
-
-    /**
-     * is active this processing to still reviewing.
-     */
-    @Builder.Default
-    private Boolean activate = Boolean.TRUE;
-
-    /**
-     * date of emotional estimation created.
-     */
-    @Builder.Default
-    private long created = Instant.now().getEpochSecond();
-
-    /**
-     * duration of emotional estimation.
-     */
-    private long duration;
-
-    /**
-     * processing id from openai.
-     */
-    private String openAiId;
-
-    /**
-     * system fingerprint from openai result.
-     */
-    private String fingerPrintOpenai;
-
-    /**
-     * keyphrases associated with the messages.
-     */
-    private List<String> keyphrases;
-
-    /**
-     * emotion associated to the keyphrases.
-     */
-    private String emotion;
+    private String keyphrase;
 }

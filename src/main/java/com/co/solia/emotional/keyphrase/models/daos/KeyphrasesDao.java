@@ -1,20 +1,28 @@
-package com.co.solia.emotional.campaign.models.daos;
+package com.co.solia.emotional.keyphrase.models.daos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Entity to save in db the keyphrases process.
+ *
+ * @author luis.bolivar
+ */
+@Builder
+@Getter
+@Document("keyphrases")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Document("keyphrase")
-public class CampaignDao {
+public class KeyphrasesDao {
 
     /**
      * identifier.
@@ -23,14 +31,19 @@ public class CampaignDao {
     private UUID id;
 
     /**
-     * keyphrase associated with the campaign.
+     * message processed.
      */
-    private String keyphrase;
+    private List<String> messages;
 
     /**
-     * emotions id for emotions processing.
+     * id of emotional result.
      */
-    private UUID emotionsId;
+    private UUID idEe;
+
+    /**
+     * result of emotional estimation.
+     */
+    private String emotionEstimation;
 
     /**
      * user identifier that start emotional estimation.
@@ -55,16 +68,6 @@ public class CampaignDao {
     private long created = Instant.now().getEpochSecond();
 
     /**
-     * the campaign json structure,
-     */
-    private String campaign;
-
-    /**
-     * brand identifier associated.
-     */
-    private UUID brandId;
-
-    /**
      * duration of emotional estimation.
      */
     private long duration;
@@ -78,4 +81,14 @@ public class CampaignDao {
      * system fingerprint from openai result.
      */
     private String fingerPrintOpenai;
+
+    /**
+     * keyphrases associated with the messages.
+     */
+    private List<String> keyphrases;
+
+    /**
+     * emotion associated to the keyphrases.
+     */
+    private String emotion;
 }

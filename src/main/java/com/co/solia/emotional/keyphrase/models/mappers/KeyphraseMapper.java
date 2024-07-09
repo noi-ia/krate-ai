@@ -1,12 +1,14 @@
 package com.co.solia.emotional.keyphrase.models.mappers;
 
 import com.co.solia.emotional.keyphrase.models.daos.KeyphraseDao;
+import com.co.solia.emotional.keyphrase.models.daos.KeyphrasesDao;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.EmotionalClientRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
+import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.share.models.dtos.rs.EmotionalClientRsDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.EmotionalDto;
-import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
+import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphrasesRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
@@ -55,16 +57,16 @@ public class KeyphraseMapper {
     }
 
     /**
-     * get a {@link KeyphraseDao} from {@link ChatCompletion} and {@link EmotionalClientRsDto}.
+     * get a {@link KeyphrasesDao} from {@link ChatCompletion} and {@link EmotionalClientRsDto}.
      * @param chat result from openai.
      * @param id of process.
      * @param emotionalRs emotional results.
      * @param duration duration of process.
      * @param userId user identifier.
      * @param emotion emotion to get the keyphrase.
-     * @return an {@link Optional} of {@link KeyphraseDao}.
+     * @return an {@link Optional} of {@link KeyphrasesDao}.
      */
-    public static Optional<KeyphraseDao> getDaoFromChatCompletion(
+    public static Optional<KeyphrasesDao> getDaoFromChatCompletion(
             final ChatCompletion chat,
             final UUID id,
             final EmotionalClientRsDto emotionalRs,
@@ -79,23 +81,23 @@ public class KeyphraseMapper {
     }
 
     /**
-     * get a {@link KeyphraseDao} from {@link ChatCompletion} and {@link EmotionalClientRsDto}.
+     * get a {@link KeyphrasesDao} from {@link ChatCompletion} and {@link EmotionalClientRsDto}.
      * @param chat result from openai.
      * @param id of process.
      * @param emotionalRs emotional results.
      * @param duration duration of process.
      * @param userId user identifier.
      * @param emotion emotion to get the keyphrase.
-     * @return a {@link KeyphraseDao}.
+     * @return a {@link KeyphrasesDao}.
      */
-    private static KeyphraseDao getDaoFromCC(
+    private static KeyphrasesDao getDaoFromCC(
             final ChatCompletion chat,
             final UUID id,
             final EmotionalClientRsDto emotionalRs,
             final long duration,
             final UUID userId,
             final String emotion) {
-        return KeyphraseDao.builder()
+        return KeyphrasesDao.builder()
                 .id(id)
                 .messages(emotionalRs.getMessages())
                 .idEe(emotionalRs.getId())
@@ -163,35 +165,60 @@ public class KeyphraseMapper {
     }
 
     /**
-     * get {@link KeyphraseRsDto} from an {@link KeyphraseDao}.
+     * get {@link KeyphrasesRsDto} from an {@link KeyphrasesDao}.
      * @param dao to get the dto.
-     * @return {@link Optional} of {@link KeyphraseRsDto}.
+     * @param keyphrases  tto map the keyphrases.
+     * @return {@link Optional} of {@link KeyphrasesRsDto}.
      */
-    public static Optional<KeyphraseRsDto> getRsFromDao(final KeyphraseDao dao) {
+    public static Optional<KeyphrasesRsDto> getRsFromDao(final KeyphrasesDao dao, final List<KeyphraseDao> keyphrases) {
         final Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
-        return Optional.of(KeyphraseRsDto.builder()
-                        .keyphrases(dao.getKeyphrases())
-                        .emotion(EmotionEnum.valueOf(dao.getEmotion()))
-                        .id(dao.getId())
-                        .messages(dao.getMessages())
-                        .emotions(EmotionalDto.builder().emotions(emotions).build())
+        return getRsLisFromDaoList(keyphrases).map(keyphrasesRs -> KeyphrasesRsDto.builder()
+                .keyphrases(keyphrasesRs)
+                .emotion(EmotionEnum.valueOf(dao.getEmotion()))
+                .id(dao.getId())
+                .messages(dao.getMessages())
+                .emotions(EmotionalDto.builder().emotions(emotions).build())
                 .build());
     }
 
     /**
-     * get {@link KeyphraseRsDto} from an {@link KeyphraseDao}.
+     * get {@link KeyphrasesRsDto} from an {@link KeyphrasesDao}.
      * @param dao to get the dto.
      * @param emotionId emotional identifier.
-     * @return {@link Optional} of {@link KeyphraseRsDto}.
+     * @return {@link Optional} of {@link KeyphrasesRsDto}.
      */
-    public static Optional<KeyphraseRsDto> getRsFromDao(final KeyphraseDao dao, final UUID emotionId) {
+    public static Optional<KeyphrasesRsDto> getRsFromDao(final KeyphrasesDao dao, final UUID emotionId, final List<KeyphraseRsDto> keyphrases) {
         final Map emotions = new Gson().fromJson(dao.getEmotionEstimation(), Map.class);
-        return Optional.of(KeyphraseRsDto.builder()
-                .keyphrases(dao.getKeyphrases())
+        return Optional.of(KeyphrasesRsDto.builder()
+                .keyphrases(keyphrases)
                 .emotion(EmotionEnum.valueOf(dao.getEmotion()))
                 .id(dao.getId())
                 .messages(dao.getMessages())
                 .emotions(EmotionalDto.builder().emotions(emotions).id(emotionId).build())
                 .build());
+    }
+
+    /**
+     * get a {@link List} of {@link KeyphraseRsDto} from a {@link List} of {@link KeyphraseDao}.
+     * @param daos a {@link List} of {@link KeyphraseDao}.
+     * @return {@link Optional} of {@link List} of {@link KeyphraseRsDto}.
+     */
+    public static Optional<List<KeyphraseRsDto>> getRsLisFromDaoList(final List<KeyphraseDao> daos) {
+        List<KeyphraseRsDto> result = daos.parallelStream().map(KeyphraseMapper::getRsFromDao).toList();
+        return Stream.of(result)
+                .filter(r -> !r.isEmpty())
+                .findFirst();
+    }
+
+    /**
+     * get a {@link KeyphraseRsDto} from a {@link KeyphraseDao}.
+     * @param dao a {@link KeyphraseDao}.
+     * @return {@link KeyphraseRsDto}.
+     */
+    public static KeyphraseRsDto getRsFromDao(final KeyphraseDao dao) {
+        return KeyphraseRsDto.builder()
+                .id(dao.getId())
+                .keyphrase(dao.getKeyphrase())
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.co.solia.emotional.campaign.models.dtos.rs;
+package com.co.solia.emotional.campaign.models.dtos.dtos;
 
 import lombok.Builder;
 
@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * brand result from get by id.
+ * the brand dto to send to openai call.
  * @param id brand identifier.
  * @param name brand name.
- * @param description brand description.
- * @param competitors brand competitors.
+ * @param description description of brand.
+ * @param competitors list of competitors url.
  */
 @Builder
-public record BrandClientRsDto(
+public record BrandDto(
         UUID id,
         String name,
         String description,

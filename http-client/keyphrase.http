@@ -1,4 +1,4 @@
-### create a emotional unique comput
+### create a emotional unique compute
 POST localhost:8080/1/keyphrase/compute/FELICIDAD
 Content-Type: application/json
 

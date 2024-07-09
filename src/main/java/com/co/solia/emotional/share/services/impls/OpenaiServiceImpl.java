@@ -1,8 +1,10 @@
 package com.co.solia.emotional.share.services.impls;
 
-import com.co.solia.emotional.campaign.models.dtos.rs.BrandClientRsDto;
+import com.co.solia.emotional.campaign.models.dtos.rq.CampaignOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
+import com.co.solia.emotional.share.models.exceptions.InternalServerException;
+import com.co.solia.emotional.share.models.validators.BasicValidator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +16,14 @@ import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionMessage.Role;
 import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ai.openai.api.OpenAiApi.FunctionTool;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +74,18 @@ public class OpenaiServiceImpl implements OpenAIService {
      * json format return from openai.
      */
     private static final String JSOM_FORMAT_OPENAI = "json_object";
+    private final Resource promptCampaign;
 
+    /**
+     * default constructor for openaiService.
+     * @param openaiApikey
+     * @param promptEmotional
+     * @param promptEmotionalUnique
+     * @param openaiModel
+     * @param promptClean
+     * @param promptKeyphrase
+     * @param promptCampaign
+     */
     @Autowired
     public OpenaiServiceImpl(
             @Value("${solia.emotional.openai.apikey}") final String openaiApikey,
@@ -77,13 +93,15 @@ public class OpenaiServiceImpl implements OpenAIService {
             @Value("${solia.emotional.openai.prompt.emotional.unique}") final String promptEmotionalUnique,
             @Value("${solia.emotional.openai.model}") final String openaiModel,
             @Value("${solia.emotional.openai.prompt.clean}") final String promptClean,
-            @Value("${solia.emotional.openai.prompt.keyphrase}") final String promptKeyphrase){
+            @Value("${solia.emotional.openai.prompt.keyphrase}") final String promptKeyphrase,
+            @Value("classpath:templates/campaign_prompt.st") final Resource promptCampaign){
         this.OPENAI_APIKEY = openaiApikey;
         this.PROMPT_EMOTIONAL = promptEmotional;
         this.PROMPT_EMOTIONAL_UNIQUE = promptEmotionalUnique;
         this.OPENAI_MODEL = openaiModel;
         this.PROMPT_CLEAN = promptClean;
         this.PROMPT_KEYPHRASE = promptKeyphrase;
+        this.promptCampaign = promptCampaign;
     }
 
     /**
@@ -149,15 +167,31 @@ public class OpenaiServiceImpl implements OpenAIService {
 
     /**
      * generate a campaign
-     *
-     * @param brand     associated to the campaign.
-     * @param emotions  emotions associated to the campaign.
-     * @param keyphrase selected to create the campaign.
+     * @param rq a wrapper for generate the campaign from openai.
      * @return {@link Optional} of {@link ChatCompletion}.
      */
     @Override
-    public Optional<ChatCompletion> generateCampaign(final BrandClientRsDto brand, final Map<String, Double> emotions, final String keyphrase) {
-        return Optional.empty();
+    public Optional<ChatCompletion> getCampaign(final CampaignOpenaiRqDto rq) {
+        log.info("[generateCampaign]: starting campaign compute.");
+        return callCampaign(rq);
+    }
+
+    /**
+     * call to OpenAI api.
+     * @param rq data for generate the campaign.
+     * @return {@link Optional} of {@link ChatCompletion}.
+     */
+    private Optional<ChatCompletion> callCampaign(final CampaignOpenaiRqDto rq) {
+        Optional<ChatCompletion> result = Optional.empty();
+        try {
+            final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
+                    .chatCompletionEntity(getCampaignChatRq(new Gson().toJson(rq)));
+            result = mapResult(response);
+        } catch (Exception e) {
+            log.error("[callCampaign]: Error getting response from OpenAI: {}", e.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -169,7 +203,7 @@ public class OpenaiServiceImpl implements OpenAIService {
         Optional<ChatCompletion> result = Optional.empty();
         try {
             final ResponseEntity<ChatCompletion> response = getOpenAiInstance()
-                    .chatCompletionEntity(getEmotionalUniqueChatRequest(messages.toString()));
+                    .chatCompletionEntity(getEmotionalUniqueChatRq(messages.toString()));
             result = mapResult(response);
         } catch (Exception e) {
             log.error("[callEEU]: Error getting response from OpenAI: {}", e.getMessage());
@@ -271,12 +305,25 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @param message from the user to get the emotional estimation.
      * @return {@link ChatCompletionRequest}
      */
-    private ChatCompletionRequest getEmotionalUniqueChatRequest(final String message) {
+    private ChatCompletionRequest getEmotionalUniqueChatRq(final String message) {
         final String model = getModel();
         final Float temperature = 0.0f;
         final ResponseFormat responseFormat = new ResponseFormat(JSOM_FORMAT_OPENAI);
         return getChatRequest(getEmotionalUniqueMessages(message), model, temperature, responseFormat);
     }
+
+    /**
+     * method to create the request to emotional unique compute.
+     * @param message from the user to get the emotional estimation.
+     * @return {@link ChatCompletionRequest}
+     */
+    private ChatCompletionRequest getCampaignChatRq(final String message) {
+        final String model = getModel();
+        final Float temperature = 0.0f;
+        final ResponseFormat format = new ResponseFormat(JSOM_FORMAT_OPENAI);
+        return getChatRequest(getCampaignMessages(message), model, temperature, format);
+    }
+
 
     /**
      * method to create the request to clean compute.
@@ -407,12 +454,28 @@ public class OpenaiServiceImpl implements OpenAIService {
     }
 
     /**
+     * method to get the message from campaign to send to openai.
+     * @param message to create as user message for campaign.
+     * @return {@link List} of {@link ChatCompletionMessage}.
+     */
+    private List<ChatCompletionMessage> getCampaignMessages(final String message){
+        List<ChatCompletionMessage> messages = new ArrayList<>();
+        try {
+            messages = List.of(getSysMessCampaign(), getUserMessage(message));
+        } catch (Exception e) {
+            log.error("[getCampaignMessages]: Error getting messages to call open ai: {}, {}", message, e.getMessage());
+        }
+
+        return messages;
+    }
+
+    /**
      * method to get the message from clean to send to openai.
      * @param message to create to get the user message.
      * @return {@link List} of {@link ChatCompletionMessage}.
      */
     private List<ChatCompletionMessage> getCleanMessages(final String message){
-        List<ChatCompletionMessage> messages = new ArrayList<>();
+        List<ChatCompletionMessage> messages = List.of();
         try {
             messages = List.of(getSysMessClean(), getUserMessage(message));
         } catch (Exception e) {
@@ -459,6 +522,33 @@ public class OpenaiServiceImpl implements OpenAIService {
      */
     private ChatCompletionMessage getSysMessEmotionalUnique(){
         return new ChatCompletionMessage(PROMPT_EMOTIONAL_UNIQUE, Role.SYSTEM);
+    }
+
+    /**
+     * method to get the system message in {@link ChatCompletionMessage} format to campaign compute.
+     * @return {@link ChatCompletionMessage}.
+     */
+    private ChatCompletionMessage getSysMessCampaign() {
+        return getPrompt(promptCampaign)
+                        .map(campaign -> new ChatCompletionMessage(campaign, Role.SYSTEM))
+                        .orElseGet(() -> {
+                            log.error("[getSysMessCampaign]: error getting system message for campaign");
+                            throw InternalServerException.builder()
+                                    .message("error getting system message for campaign")
+                                    .endpoint("/campaign/")
+                                    .build();
+                        });
+    }
+
+    private Optional<String> getPrompt(final Resource resource) {
+        Optional<String> campaignPrompt = Optional.empty();
+        try {
+            final String prompt = resource.getContentAsString(StandardCharsets.UTF_8);
+            campaignPrompt = BasicValidator.isValidString(prompt) ? Optional.of(prompt) : Optional.empty();
+        } catch (IOException e) {
+            log.error("[getPrompt]: error getting prompt: {}", e.getMessage());
+        }
+        return campaignPrompt;
     }
 
     /**

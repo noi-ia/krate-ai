@@ -3,7 +3,7 @@ POST localhost:8080/1/campaign/compute/
 Content-Type: application/json
 
 {
-  "keyphrase": "La efectividad es algo que puede generar incertidumbre",
-  "brandId": "c0889c1a-642a-400a-b1ff-5a2c0f7c63cd",
-  "emotionalId": "0762b7c8-b639-46b5-affd-7d0ad1c56eca"
+  "keyphrase": "Buscar sabores agradables puede influir en la percepción del producto",
+  "brandId": "615ad9d4-73fa-42b3-ad52-c8c40bb2ea20",
+  "emotionalId": "46eb01c4-72e5-49ca-8dfe-22d38875b059"
 }

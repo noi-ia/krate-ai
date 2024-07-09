@@ -2,9 +2,11 @@ package com.co.solia.emotional.campaign.services.impls;
 
 import com.co.solia.emotional.campaign.clients.clients.BrandClient;
 import com.co.solia.emotional.campaign.models.daos.CampaignDao;
+import com.co.solia.emotional.campaign.models.dtos.rq.CampaignOpenaiRqDto;
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.BrandClientRsDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
+import com.co.solia.emotional.campaign.models.mappers.BrandMapper;
 import com.co.solia.emotional.campaign.models.mappers.CampaignMapper;
 import com.co.solia.emotional.campaign.models.repos.CampaignRepo;
 import com.co.solia.emotional.campaign.services.services.CampaignService;
@@ -127,9 +129,27 @@ public class CampaignServiceImpl implements CampaignService {
             final UUID userId) {
         log.info("[generateCampaign]: ready to generate campaign for userId: {}, brandId: {}", userId, brand.id());
         final long start = BasicValidator.getNow();
-        return openAIService.generateCampaign(brand, emotions, rq.getKeyphrase()).flatMap(chat ->
+        return openAIService.getCampaign(getRqCampaignOpenai(brand, emotions, rq.getKeyphrase())).flatMap(chat ->
             mapAndSave(chat, BasicValidator.getDuration(start)).flatMap(CampaignMapper::getRsFromDao)
         );
+    }
+
+    /**
+     * get the request to call the campaign generator from openai.
+     * @param brand brand associated with the campaign,
+     * @param emotions emotions associated with the comments.
+     * @param keyphrase to generate the campaign,
+     * @return {@link CampaignOpenaiRqDto}.
+     */
+    private CampaignOpenaiRqDto getRqCampaignOpenai(
+            final BrandClientRsDto brand,
+            final Map<String, Double> emotions,
+            final String keyphrase) {
+        return CampaignOpenaiRqDto.builder()
+                .brand(BrandMapper.getDtoFromRs(brand))
+                .emotions(emotions)
+                .keyphrase(keyphrase)
+                .build();
     }
 
     public Optional<CampaignDao> mapAndSave(final ChatCompletion chat, final Long duration) {
