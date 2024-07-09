@@ -13,3 +13,6 @@ Content-Type: application/json
 
 ### Get by id.
 GET http://localhost:8080/1/keyphrase/compute/f604a7bd-bef2-4a05-bd49-4b77e6b71703
+
+### Get a keyphrase by id.
+GET http://localhost:8080/1/keyphrase/compute/keyphrase/8d28ce51-572a-4f71-96e2-e01e4022dced

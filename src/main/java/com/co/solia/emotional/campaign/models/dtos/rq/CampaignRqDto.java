@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,9 +19,9 @@ import java.util.UUID;
 public class CampaignRqDto {
 
     /**
-     * keyphrase to generate the campaign.
+     * keyphrase id to generate the campaign.
      */
-    private String keyphrase;
+    private UUID keyphraseId;
 
     /**
      * brand identifier to add context to the campaign.

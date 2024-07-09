@@ -3,7 +3,7 @@ POST localhost:8080/1/campaign/compute/
 Content-Type: application/json
 
 {
-  "keyphrase": "Buscar sabores agradables puede influir en la percepción del producto",
+  "keyphraseId": "8d28ce51-572a-4f71-96e2-e01e4022dced",
   "brandId": "615ad9d4-73fa-42b3-ad52-c8c40bb2ea20",
   "emotionalId": "46eb01c4-72e5-49ca-8dfe-22d38875b059"
 }

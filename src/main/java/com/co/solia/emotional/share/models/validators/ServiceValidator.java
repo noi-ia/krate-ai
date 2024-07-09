@@ -1,5 +1,6 @@
 package com.co.solia.emotional.share.models.validators;
 
+import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -74,5 +75,16 @@ public class ServiceValidator {
                                     .endpoint(endpoint)
                                     .build();
                         });
+    }
+
+    /**
+     * validate the campaign request to generate the campaign.
+     * @param rq to validate.
+     */
+    public static void validateCampaignRq(final CampaignRqDto rq) {
+        BasicValidator.isValidField(BasicValidator.isValidId(rq.getKeyphraseId()), "keyphrase");
+        BasicValidator.isValidField(BasicValidator.isValidId(rq.getBrandId()), "brandId");
+        BasicValidator.isValidField(BasicValidator.isValidId(rq.getEmotionalId()), "emotionalId");
+        log.info("[validateComputeCampaign]: the data is valid to generate the campaign.");
     }
 }

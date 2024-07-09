@@ -3,6 +3,7 @@ package com.co.solia.emotional.keyphrase.services.services;
 import com.co.solia.emotional.keyphrase.models.daos.KeyphraseDao;
 import com.co.solia.emotional.keyphrase.models.daos.KeyphrasesDao;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
+import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphrasesRsDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 
@@ -25,7 +26,7 @@ public interface KeyphraseService {
     Optional<KeyphrasesRsDto> compute(KeyphraseRqDto keyphraseRq, EmotionEnum emotion);
 
     /**
-     * get a keyphrase process by id.
+     * get a keyphrases process by id.
      * @param id to get the keyphrase.
      * @return {@link Optional} of {@link KeyphrasesRsDto}.
      */
@@ -51,4 +52,11 @@ public interface KeyphraseService {
      * @return {@link Optional} of {@link List} of {@link KeyphraseDao}.
      */
     Optional<List<KeyphraseDao>> getKeyPhrasesById(UUID id);
+
+    /**
+     * get a keyphrase process by id.
+     * @param id to get the keyphrase.
+     * @return {@link Optional} of {@link KeyphraseRsDto}.
+     */
+    Optional<KeyphraseRsDto> getKeyphraseById(UUID id);
 }

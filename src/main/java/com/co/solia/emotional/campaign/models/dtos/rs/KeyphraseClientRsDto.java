@@ -1,19 +1,21 @@
 package com.co.solia.emotional.campaign.models.dtos.rs;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 /**
  * keyphrase response from client.
- *
+ * @param id of the keyphrase.
+ * @param keyphraseId of the process to generate the keyphrase.
+ * @param keyphrase string plain.
  * @author luis.bolivar.
  */
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class KeyphraseClientRsDto {
-    private String a;
+public record KeyphraseClientRsDto(
+        UUID id,
+        UUID keyphraseId,
+        String keyphrase
+){
 }

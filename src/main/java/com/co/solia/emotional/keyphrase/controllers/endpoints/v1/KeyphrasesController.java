@@ -1,5 +1,6 @@
 package com.co.solia.emotional.keyphrase.controllers.endpoints.v1;
 
+import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.keyphrase.controllers.docs.KeyphraseControllerDocs;
@@ -74,6 +75,26 @@ public class KeyphrasesController implements KeyphraseControllerDocs {
                     throw NotFoundException.builder()
                             .message("Error keyphrase not found..")
                             .endpoint("/keyphrase/compute/{id}")
+                            .build();
+                });
+    }
+
+    /**
+     * get a keyphrase by id.
+     *
+     * @param id {@link UUID} to get the keyphrase.
+     * @return {@link ResponseEntity} of {@link KeyphrasesRsDto}.
+     */
+    @GetMapping("/compute/keyphrase/{id}")
+    public ResponseEntity<KeyphraseRsDto> getKeyphraseById(@PathVariable("id") final UUID id) {
+        ServiceValidator.validateId(id, "/keyphrase/compute/keyphrase/{id}");
+        return keyphraseService.getKeyphraseById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> {
+                    log.error("[getKeyphraseById]: Error processing the messages.");
+                    throw NotFoundException.builder()
+                            .message("Error keyphrase not found..")
+                            .endpoint("/keyphrase/compute/keyphrase/{id}")
                             .build();
                 });
     }

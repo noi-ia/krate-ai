@@ -1,6 +1,7 @@
 package com.co.solia.emotional.campaign.services.impls;
 
 import com.co.solia.emotional.campaign.clients.clients.BrandClient;
+import com.co.solia.emotional.campaign.clients.clients.KeyphraseClient;
 import com.co.solia.emotional.campaign.models.daos.CampaignDao;
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignOpenaiRqDto;
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
@@ -13,6 +14,7 @@ import com.co.solia.emotional.campaign.services.services.CampaignService;
 import com.co.solia.emotional.share.clients.clients.EmotionalClient;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,17 +56,41 @@ public class CampaignServiceImpl implements CampaignService {
     private BrandClient brandClient;
 
     /**
+     * dependency on {@link KeyphraseClient}.
+     */
+    private KeyphraseClient keyphraseClient;
+
+    /**
      * compute for generate the campaigns.
      * @param rq to generate the campaign.
      * @return {@link Optional} of {@link CampaignRsDto}.
      */
     @Override
     public Optional<CampaignRsDto> compute(final CampaignRqDto rq) {
-        validateComputeCampaign(rq);
+        ServiceValidator.validateCampaignRq(rq);
         final UUID userId = getUserId();
+        final String keyphrase = getKeyphraseById(rq.getKeyphraseId());
         final Map<String, Double> emotions = getEmotionsById(rq.getEmotionalId());
         final BrandClientRsDto brand = getBrandById(rq.getBrandId());
-        return generateCampaign(rq, brand, emotions, userId);
+        return generateCampaign(keyphrase, brand, emotions, userId, rq.getEmotionalId());
+    }
+
+    /**
+     * get the keyphrase by id.
+     * @param id to get the keyphrase.
+     * @return {@link String} with the keyphrase plain.
+     */
+    private String getKeyphraseById(final UUID id) {
+        return keyphraseClient.getKeyphraseById(id).map(keyphrase -> {
+            log.info("[getKeyphraseById]: get keyphrase ok.");
+            return keyphrase.keyphrase();
+        }).orElseGet(() -> {
+           log.error("[getKeyphraseById]: error getting the keyphrase by id: {}.", id);
+           throw InternalServerException.builder()
+                   .endpoint("/campaign/compute/")
+                   .message("error getting the keyphrase by id: " + id)
+                   .build();
+        });
     }
 
     /**
@@ -111,26 +137,17 @@ public class CampaignServiceImpl implements CampaignService {
         return UUID.randomUUID();
     }
 
-    /**
-     * validate the campaign request to generate the campaign.
-     * @param rq to validate.
-     */
-    private void validateComputeCampaign(final CampaignRqDto rq) {
-        BasicValidator.isValidField(BasicValidator.isValidString(rq.getKeyphrase()), "keyphrase");
-        BasicValidator.isValidField(BasicValidator.isValidId(rq.getBrandId()), "brandId");
-        BasicValidator.isValidField(BasicValidator.isValidId(rq.getEmotionalId()), "emotionalId");
-        log.info("[validateComputeCampaign]: the data is valid to generate the campaign.");
-    }
-
     private Optional<CampaignRsDto> generateCampaign(
-            final CampaignRqDto rq,
+            final String keyphrase,
             final BrandClientRsDto brand,
             final Map<String, Double> emotions,
-            final UUID userId) {
+            final UUID userId, final UUID emotionsId) {
         log.info("[generateCampaign]: ready to generate campaign for userId: {}, brandId: {}", userId, brand.id());
         final long start = BasicValidator.getNow();
-        return openAIService.getCampaign(getRqCampaignOpenai(brand, emotions, rq.getKeyphrase())).flatMap(chat ->
-            mapAndSave(chat, BasicValidator.getDuration(start)).flatMap(CampaignMapper::getRsFromDao)
+        final UUID id = UUID.randomUUID();
+        return openAIService.getCampaign(getRqCampaignOpenai(brand, emotions, keyphrase)).flatMap(chat ->
+            mapAndSave(chat, BasicValidator.getDuration(start), id, keyphrase, brand.id(), userId, emotionsId)
+                    .flatMap(CampaignMapper::getRsFromDao)
         );
     }
 
@@ -152,8 +169,15 @@ public class CampaignServiceImpl implements CampaignService {
                 .build();
     }
 
-    public Optional<CampaignDao> mapAndSave(final ChatCompletion chat, final Long duration) {
-        return CampaignMapper.fromChatGetDao(chat, duration)
+    public Optional<CampaignDao> mapAndSave(
+            final ChatCompletion chat,
+            final Long duration,
+            final UUID id,
+            final String keyphrase,
+            final UUID brandId,
+            final UUID userId,
+            final UUID emotionsId) {
+        return CampaignMapper.fromChatGetDao(chat, duration, id, keyphrase, brandId, userId, emotionsId)
                 .flatMap(this::save);
     }
 

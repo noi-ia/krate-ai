@@ -75,7 +75,7 @@ public class KeyphraseServiceImpl implements KeyphraseService {
     @Override
     public Optional<KeyphrasesRsDto> getById(final UUID id) {
         log.info("[getById]: get the keyphrase by id: {}", id);
-        return getKeyphraseById(id).flatMap(keyphrases ->
+        return getKeyphrasesById(id).flatMap(keyphrases ->
             getKeyPhrasesById(id).flatMap(keyphraseList -> KeyphraseMapper.getRsFromDao(keyphrases, keyphraseList)));
     }
 
@@ -267,11 +267,40 @@ public class KeyphraseServiceImpl implements KeyphraseService {
     }
 
     /**
+     * get a keyphrase process by id.
+     *
+     * @param id to get the keyphrase.
+     * @return {@link Optional} of {@link KeyphraseRsDto}.
+     */
+    @Override
+    public Optional<KeyphraseRsDto> getKeyphraseById(final UUID id) {
+        log.info("[getKeyphraseById]: ready to get the keyphrase by id: {}", id);
+        return getKeyphraseByKeyphraseId(id).map(KeyphraseMapper::getRsFromDao);
+    }
+
+    /**
+     * get a keyphrase process by id.
+     *
+     * @param id to get the keyphrase.
+     * @return {@link Optional} of {@link KeyphraseRsDto}.
+     */
+    private Optional<KeyphraseDao> getKeyphraseByKeyphraseId(final UUID id) {
+        Optional<KeyphraseDao> result = Optional.empty();
+        try {
+            result = keyphraseRepo.findById(id);
+            log.info("[getKeyphraseByKeyphraseId]: found keyphrase ok.");
+        } catch (Exception e) {
+            log.error("[getKeyphraseByKeyphraseId]: error getting keyphrase by id: {}, with error: {}", id, e.getMessage());
+        }
+        return result;
+    }
+
+    /**
      * get the keyphrase by id from db.
      * @param id to get the keyphrase from db.
      * @return {@link Optional} of {@link KeyphrasesDao}.
      */
-    private Optional<KeyphrasesDao> getKeyphraseById(final UUID id) {
+    private Optional<KeyphrasesDao> getKeyphrasesById(final UUID id) {
         Optional<KeyphrasesDao> result = Optional.empty();
 
         try {

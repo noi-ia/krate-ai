@@ -1,8 +1,8 @@
 package com.co.solia.emotional.campaign.clients.impls;
 
-import com.co.solia.emotional.campaign.clients.clients.BrandClient;
-import com.co.solia.emotional.campaign.models.dtos.rs.BrandClientRsDto;
-import com.co.solia.emotional.campaign.models.mappers.BrandMapper;
+import com.co.solia.emotional.campaign.clients.clients.KeyphraseClient;
+import com.co.solia.emotional.campaign.models.dtos.rs.KeyphraseClientRsDto;
+import com.co.solia.emotional.campaign.models.mappers.KeyphraseMapper;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.ConnectionPool;
@@ -18,18 +18,18 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
- * implementation of {@link BrandClient}.
+ * implementation of {@link KeyphraseClient}.
  *
  * @author luis.bolivar.
  */
 @Component
 @Slf4j
-public class BrandClientImpl implements BrandClient {
+public class KeyphraseClientImpl implements KeyphraseClient {
 
     /**
-     * brand url to consume its api.
+     * emotional url to consume its api.
      */
-    private final String brandUrl;
+    private final String keyphraseUrl;
 
     /**
      * build the client to consume the other endpoints.
@@ -44,35 +44,26 @@ public class BrandClientImpl implements BrandClient {
 
     /**
      * default constructor.
-     * @param brandUrl emotional url.
+     * @param keyphraseUrl keyphrase url.
      */
     @Autowired
-    public BrandClientImpl(@Value("${solia.emotional.brand.url}") final String brandUrl){
-        this.brandUrl = brandUrl;
+    public KeyphraseClientImpl(@Value("${solia.emotional.keyphrase.url}") final String keyphraseUrl){
+        this.keyphraseUrl = keyphraseUrl;
     }
 
     /**
-     * get a brand by id.
+     * get the keyphrase by id.
      *
-     * @param id to get the brand.
-     * @return {@link Optional} of {@link BrandClientRsDto}
+     * @param id to get the keyphrase.
+     * @return {@link Optional} of {@link KeyphraseClientRsDto}.
      */
     @Override
-    public Optional<BrandClientRsDto> getById(final UUID id) {
+    public Optional<KeyphraseClientRsDto> getKeyphraseById(UUID id) {
         final Request rq = getRqToGetById(getUrlGetById(id));
-        return callGetBrandById(rq).flatMap(rs -> {
-            log.info("[getById]: response: {}", rs.body());
-            return BrandMapper.getFromRs(rs);
+        return callGetKeyphraseById(rq).flatMap(rs -> {
+            log.info("[getKeyphraseById]: response: {}", rs.body());
+            return KeyphraseMapper.getFromRs(rs);
         });
-    }
-
-    /**
-     * get a brand url to get brand by id.
-     * @param id brand identifier.
-     * @return {@link String} with the brand url.
-     */
-    private String getUrlGetById(final UUID id) {
-        return brandUrl + id;
     }
 
     /**
@@ -80,18 +71,27 @@ public class BrandClientImpl implements BrandClient {
      * @param rq for call.
      * @return {@link Optional} of {@link Response}.
      */
-    private Optional<Response> callGetBrandById(final Request rq) {
+    private Optional<Response> callGetKeyphraseById(final Request rq) {
         Optional<Response> result = Optional.empty();
         try {
             final Call call = client.newCall(rq);
             final Response response = call.execute();
             result = Optional.of(response);
-            log.info("[callGetBrandById] call to keyphrase ok.");
+            log.info("[callGetKeyphraseById] call to keyphrase ok.");
         } catch(Exception e) {
-            log.error("[callGetBrandById]: error getting the brand processing by id error: {}", e.getMessage());
+            log.error("[callGetKeyphraseById]: error getting the brand processing by id error: {}", e.getMessage());
         }
 
         return result;
+    }
+
+    /**
+     * get a keyphrase url to get keyphrase by id.
+     * @param id keyphrase identifier.
+     * @return {@link String} with the keyphrase url.
+     */
+    private String getUrlGetById(final UUID id) {
+        return keyphraseUrl + "compute/keyphrase/" + id;
     }
 
     /**

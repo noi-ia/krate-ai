@@ -25,6 +25,11 @@ public class KeyphraseRsDto {
     private UUID id;
 
     /**
+     * keyphrases process identifier.
+     */
+    private UUID idKeyphrases;
+
+    /**
      * a keyphrase.
      */
     private String keyphrase;

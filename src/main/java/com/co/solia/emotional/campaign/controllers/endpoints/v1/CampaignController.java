@@ -5,6 +5,8 @@ import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
 import com.co.solia.emotional.campaign.services.services.CampaignService;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
+import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,14 @@ public class CampaignController implements CampaignControllerDoc {
 
     /**
      * {@inheritDoc}.
-     * @param request to generate the campaign.
+     * @param rq to generate the campaign.
      * @return
      */
     @PostMapping("/compute/")
     @Override
-    public ResponseEntity<CampaignRsDto> compute(@RequestBody final CampaignRqDto request) {
-        return campaignService.compute(request)
+    public ResponseEntity<CampaignRsDto> compute(@RequestBody final CampaignRqDto rq) {
+        ServiceValidator.validateCampaignRq(rq);
+        return campaignService.compute(rq)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> {
                     log.error("[compute]: The compute process failed, try again.");

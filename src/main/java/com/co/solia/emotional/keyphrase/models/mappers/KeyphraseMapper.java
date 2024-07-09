@@ -218,6 +218,7 @@ public class KeyphraseMapper {
     public static KeyphraseRsDto getRsFromDao(final KeyphraseDao dao) {
         return KeyphraseRsDto.builder()
                 .id(dao.getId())
+                .idKeyphrases(dao.getIdKeyphrases())
                 .keyphrase(dao.getKeyphrase())
                 .build();
     }
