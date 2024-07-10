@@ -200,4 +200,34 @@ public class CampaignServiceImpl implements CampaignService {
 
         return result;
     }
+
+    /**
+     * get campaign by id.
+     *
+     * @param id to get the campaign.
+     * @return {@link Optional} of {@link CampaignRsDto}.
+     */
+    @Override
+    public Optional<CampaignRsDto> getById(final UUID id) {
+        log.info("[getById]: ready to get the campaign by id: {}", id);
+        return getCampaignById(id).flatMap(CampaignMapper::getRsFromDao);
+    }
+
+    /**
+     * get a campaign by id.
+     * @param id to get the campaign.
+     * @return {@link Optional} of {@link CampaignDao}.
+     */
+    private Optional<CampaignDao> getCampaignById(final UUID id) {
+        Optional<CampaignDao> result = Optional.empty();
+
+        try {
+            result = campaignRepo.findById(id);
+            log.info("[getCampaignById]: get campaign ok.");
+        } catch (Exception e) {
+            log.error("[getCampaignById]: error getting campaign by id: {}, with error: {}", id, e.getMessage());
+        }
+
+        return result;
+    }
 }

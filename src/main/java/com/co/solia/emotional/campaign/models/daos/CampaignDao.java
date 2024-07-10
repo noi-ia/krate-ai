@@ -1,12 +1,15 @@
 package com.co.solia.emotional.campaign.models.daos;
 
+import com.co.solia.emotional.campaign.models.dtos.dtos.PillarDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Document("keyphrase")
+@Getter
 public class CampaignDao {
 
     /**
@@ -21,6 +25,21 @@ public class CampaignDao {
      */
     @Id
     private UUID id;
+
+    /**
+     * name of the campaign.
+     */
+    private String name;
+
+    /**
+     * description of the campaign.
+     */
+    private String description;
+
+    /**
+     * pillars of the campaign.
+     */
+    private List<PillarDto> pillars;
 
     /**
      * keyphrase associated with the campaign.
@@ -53,11 +72,6 @@ public class CampaignDao {
      */
     @Builder.Default
     private long created = Instant.now().getEpochSecond();
-
-    /**
-     * the campaign json structure,
-     */
-    private String campaign;
 
     /**
      * brand identifier associated.

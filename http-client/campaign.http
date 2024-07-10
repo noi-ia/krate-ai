@@ -7,3 +7,6 @@ Content-Type: application/json
   "brandId": "615ad9d4-73fa-42b3-ad52-c8c40bb2ea20",
   "emotionalId": "46eb01c4-72e5-49ca-8dfe-22d38875b059"
 }
+
+### gett a campaign by id
+GET localhost:8080/1/campaign/compute/f5d48769-678c-4e70-82dc-6fc11e2da6b6

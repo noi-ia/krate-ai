@@ -5,15 +5,19 @@ import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
 import com.co.solia.emotional.campaign.services.services.CampaignService;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
 import com.co.solia.emotional.share.models.validators.ServiceValidator;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 /**
  * campaign endpoints.
@@ -49,4 +53,24 @@ public class CampaignController implements CampaignControllerDoc {
                             .endpoint("/campaign/compute/").build();
                 });
     }
+
+    /**
+     * get a campaign by id.
+     * @param id tto get the campaign.
+     * @return {@link ResponseEntity} of {@link CampaignRsDto}.
+     */
+    @GetMapping("/compute/{id}")
+    @Override
+    public ResponseEntity<CampaignRsDto> getById(@PathVariable("id") final UUID id) {
+        ServiceValidator.validateId(id, "/campaign/compute/{id}");
+        return campaignService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> {
+                    log.error("[getById]: error getting the campaign by id: {}.", id);
+                    throw InternalServerException.builder()
+                            .message("error getting the campaign by id: " + id)
+                            .endpoint("/campaign/compute/{id}").build();
+                });
+    }
+
 }

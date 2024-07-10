@@ -45,9 +45,9 @@ public class ServiceValidator {
         Stream.of(id)
                 .filter(Objects::nonNull)
                 .findFirst()
-                .ifPresentOrElse(idEe -> log.info("[validateIdEe]: id of emotional estimation format is ok")
+                .ifPresentOrElse(idEe -> log.info("[validateId]: id of emotional estimation format is ok")
                         , () -> {
-                            log.error("[validateIdEe]: the id of emotional estimation is invalid.");
+                            log.error("[validateId]: the id of emotional estimation is invalid.");
                             throw BadRequestException.builder()
                                     .message("the id to process is invalid.")
                                     .endpoint(endpoint + id)
