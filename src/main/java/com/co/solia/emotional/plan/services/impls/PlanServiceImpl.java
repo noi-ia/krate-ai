@@ -11,11 +11,15 @@ import com.co.solia.emotional.plan.models.repos.PlanRepo;
 import com.co.solia.emotional.plan.services.services.PlanService;
 import com.co.solia.emotional.share.models.dtos.rs.DefaultRsDto;
 import com.co.solia.emotional.share.models.exceptions.CreatedException;
+import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import com.co.solia.emotional.share.models.validators.ServiceValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -141,11 +145,78 @@ public class PlanServiceImpl implements PlanService {
      * update a plan.
      *
      * @param rq to update a plan.
+     * @param id plan identifier.
      * @return {@link Optional} of {@link UpdatePlanRsDto}.
      */
     @Override
-    public Optional<UpdatePlanRsDto> update(final UpdatePlanRqDto rq) {
-        return Optional.empty();
+    public Optional<UpdatePlanRsDto> update(final UUID id, final UpdatePlanRqDto rq) {
+        ServiceValidator.validateUpdatePlan(id, rq);
+        return updatePlan(id, rq)
+                .map(PlanMapper::getUpdateRsFromDao)
+                .orElseGet(() -> {
+                    log.warn("[update]: error updating the plan: {}, not found.", id);
+                    throw NotFoundException.builder()
+                            .message("error updating the plan: %s, not found.".formatted(id))
+                            .endpoint("/plan/{id}")
+                            .build();
+                });
+    }
+
+    /**
+     * update the plan.
+     * @param id plan identifier.
+     * @param rq payload with the data to update.
+     * @return {@link Optional} of {@link PlanDao}.
+     */
+    private Optional<PlanDao> updatePlan(final UUID id, final UpdatePlanRqDto rq) {
+        return getPlanById(id)
+                .map(dao -> updatePriceMonth(dao, rq))
+                .map(dao -> updatePriceYear(dao, rq))
+                .flatMap(this::save);
+    }
+
+    /**
+     * update the dao with the data from request.
+     * @param dao to update.
+     * @param rq date to update.
+     * @return {@link PlanDao}
+     */
+    private PlanDao updatePriceMonth(final PlanDao dao, final UpdatePlanRqDto rq) {
+        final BigDecimal newPriceMonth = Validator.isValidBigDecimal(rq.priceMonth()) ?
+                rq.priceMonth() : dao.getPriceMonth();
+        return PlanDao.builder()
+                .id(dao.getId())
+                .updated(Validator.getNow())
+                .name(dao.getName())
+                .refreshByCam(dao.getRefreshByCam())
+                .camsByMonth(dao.getCamsByMonth())
+                .priceMonth(newPriceMonth)
+                .priceYear(dao.getPriceYear())
+                .created(dao.getCreated())
+                .active(dao.getActive())
+                .build();
+    }
+
+    /**
+     * update the dao with the data from request.
+     * @param dao to update.
+     * @param rq date to update.
+     * @return {@link PlanDao}
+     */
+    private PlanDao updatePriceYear(final PlanDao dao, final UpdatePlanRqDto rq) {
+        final BigDecimal newPriceYear = Validator.isValidBigDecimal(rq.priceYear()) ?
+                rq.priceYear() : dao.getPriceYear();
+        return PlanDao.builder()
+                .id(dao.getId())
+                .updated(Validator.getNow())
+                .name(dao.getName())
+                .refreshByCam(dao.getRefreshByCam())
+                .camsByMonth(dao.getCamsByMonth())
+                .priceMonth(dao.getPriceMonth())
+                .priceYear(newPriceYear)
+                .created(dao.getCreated())
+                .active(dao.getActive())
+                .build();
     }
 
     /**

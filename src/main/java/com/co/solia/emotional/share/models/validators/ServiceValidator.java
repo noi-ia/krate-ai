@@ -2,6 +2,7 @@ package com.co.solia.emotional.share.models.validators;
 
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.plan.models.dtos.rq.CreatePlanRqDto;
+import com.co.solia.emotional.plan.models.dtos.rq.UpdatePlanRqDto;
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -102,5 +103,27 @@ public class ServiceValidator {
         Validator.isValidField(Validator.isValidBigDecimal(rq.priceMonth()), "priceMonth", "/plan/");
         Validator.isValidField(Validator.isValidBigDecimal(rq.priceYear()), "priceYear", "/plan/");
         log.info("[validateCreatePlan]: the data is valid to generate the campaign.");
+    }
+
+    /**
+     * validate the data to update a plan.
+     * @param id plan identifier.
+     * @param rq data to update the plan with.
+     */
+    public static void validateUpdatePlan(final UUID id, final UpdatePlanRqDto rq){
+        Validator.isValidField(Validator.isValidId(id), "id", "/plan/{id}");
+        Validator.isValidField(validatePrices(rq), "prices", "/plan/{id}");
+        log.info("[validateUpdatePlan]: the data is valid to update the plan.");
+    }
+
+    /**
+     * validate the prices, min one must be different to null.
+     * @param rq to validate the prices.
+     * @return {@link Boolean} where just one must be different to null.
+     */
+    private static Boolean validatePrices(final UpdatePlanRqDto rq) {
+        final Boolean isValidPriceMonth = Validator.isValidBigDecimal(rq.priceMonth());
+        final Boolean isValidPriceYear = Validator.isValidBigDecimal(rq.priceYear());
+        return  isValidPriceMonth || isValidPriceYear;
     }
 }

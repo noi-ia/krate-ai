@@ -4,7 +4,7 @@ Content-Type: application/json
 x-a-x: 1232
 
 {
-  "name": "free",
+  "name": "free-2",
   "camsByMonth": 1,
   "refreshByCam": 1,
   "priceMonth": 0,
@@ -15,7 +15,17 @@ x-a-x: 1232
 GET http://localhost:8080/1/plan/id/f65e3229-240e-43b8-b471-024f1f1d9361
 
 ### Get by name.
-GET http://localhost:8080/1/plan/name/free
+GET http://localhost:8080/1/plan/name/free-2
 
 ### Get all.
 GET http://localhost:8080/1/plan/
+
+### update month price
+PUT http://localhost:8080/1/plan/1594311f-682d-49b2-8294-b1e172feffa8
+Content-Type: application/json
+x-a-x: 1232
+
+{
+  "priceMonth": 1,
+  "priceYear": 12
+}

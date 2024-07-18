@@ -49,7 +49,7 @@ public interface PlanControllerDocs {
      * @param rq to update a plan.
      * @return {@link ResponseEntity} of {@link UpdatePlanRsDto}.
      */
-    ResponseEntity<UpdatePlanRsDto>update(UpdatePlanRqDto rq);
+    ResponseEntity<UpdatePlanRsDto>update(UUID id, UpdatePlanRqDto rq);
 
     /**
      * delete a plan by id.

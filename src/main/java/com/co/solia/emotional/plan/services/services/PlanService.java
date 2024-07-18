@@ -51,7 +51,7 @@ public interface PlanService {
      * @param rq to update a plan.
      * @return {@link Optional} of {@link UpdatePlanRsDto}.
      */
-    Optional<UpdatePlanRsDto>update(UpdatePlanRqDto rq);
+    Optional<UpdatePlanRsDto>update(UUID id, UpdatePlanRqDto rq);
 
     /**
      * delete a plan by id.

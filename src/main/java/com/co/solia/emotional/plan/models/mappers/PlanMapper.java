@@ -4,6 +4,7 @@ import com.co.solia.emotional.plan.models.daos.PlanDao;
 import com.co.solia.emotional.plan.models.dtos.rq.CreatePlanRqDto;
 import com.co.solia.emotional.plan.models.dtos.rs.CreatePlanRsDto;
 import com.co.solia.emotional.plan.models.dtos.rs.GetPlanRsDto;
+import com.co.solia.emotional.plan.models.dtos.rs.UpdatePlanRsDto;
 import com.co.solia.emotional.share.models.validators.Validator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -110,6 +111,35 @@ public class PlanMapper {
      */
     private static GetPlanRsDto getGetPlanRsFromDao(final PlanDao dao) {
         return GetPlanRsDto.builder()
+                .id(dao.getId())
+                .name(dao.getName())
+                .camsByMonth(dao.getCamsByMonth())
+                .refreshByCam(dao.getRefreshByCam())
+                .priceMonth(dao.getPriceMonth())
+                .priceYear(dao.getPriceYear())
+                .build();
+    }
+
+    /**
+     * get a {@link UpdatePlanRsDto} from a {@link PlanDao}
+     * @param dao dao to get {@link UpdatePlanRsDto}.
+     * @return {@link Optional} of {@link UpdatePlanRsDto}.
+     */
+    public static Optional<UpdatePlanRsDto> getUpdateRsFromDao(final PlanDao dao) {
+        return Stream.of(dao)
+                .filter(Objects::nonNull)
+                .filter(d -> d.getId() != null)
+                .findFirst()
+                .map(PlanMapper::getUpdatePlanRsFromDao);
+    }
+
+    /**
+     * get a {@link UpdatePlanRsDto} from a {@link PlanDao}
+     * @param dao dao to get {@link UpdatePlanRsDto}.
+     * @return {@link Optional} of {@link UpdatePlanRsDto}.
+     */
+    private static UpdatePlanRsDto getUpdatePlanRsFromDao(final PlanDao dao) {
+        return UpdatePlanRsDto.builder()
                 .id(dao.getId())
                 .name(dao.getName())
                 .camsByMonth(dao.getCamsByMonth())
