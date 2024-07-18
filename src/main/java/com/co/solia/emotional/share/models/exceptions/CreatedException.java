@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Internal server exception.
+ * Bad request exception.
  *
  * @author luis.bolivar
  */
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Getter
-public class InternalServerException extends RuntimeException {
+public class CreatedException extends RuntimeException {
     /**
      * message about the exception.
      */

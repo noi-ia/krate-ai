@@ -10,7 +10,7 @@ import com.co.solia.emotional.clean.models.mappers.CleanMapper;
 import com.co.solia.emotional.clean.models.repos.CleanBatchRepo;
 import com.co.solia.emotional.clean.models.repos.CleanRepo;
 import com.co.solia.emotional.clean.services.services.CleanService;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
@@ -70,7 +70,7 @@ public class CleanServiceImpl implements CleanService {
      */
     private Optional<CleanRsDto> cleanMessage(final String message,final UUID userID, final UUID idBatch) {
         final UUID id = UUID.randomUUID();
-        final long start = BasicValidator.getNow();
+        final long start = Validator.getNow();
         return openaiService.clean(message).flatMap(chat ->
                 mapAndSave(message, chat, id, userID, idBatch, getDuration(start))
                         .flatMap(CleanMapper::getRsDtoFromDao));
@@ -82,7 +82,7 @@ public class CleanServiceImpl implements CleanService {
      * @return long of duration.
      */
     private static long getDuration(final long start) {
-        return BasicValidator.getDuration(start, Instant.now().toEpochMilli());
+        return Validator.getDuration(start, Instant.now().toEpochMilli());
     }
 
     /**
@@ -150,7 +150,7 @@ public class CleanServiceImpl implements CleanService {
     public Optional<CleanBatchRsDto> cleanList(final CleanBatchRqDto cleansRq) {
         final UUID userId = UUID.randomUUID();
         final UUID id = UUID.randomUUID();
-        final long start = BasicValidator.getNow();
+        final long start = Validator.getNow();
         return getCleanMessages(cleansRq, userId, id)
                 .flatMap(list -> mapAndSave(list.size(), id, userId, start)
                         .flatMap(dao -> CleanMapper.getRsFromResults(id, list)));

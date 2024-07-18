@@ -4,7 +4,7 @@ import com.co.solia.emotional.campaign.models.dtos.rq.CampaignOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -544,7 +544,7 @@ public class OpenaiServiceImpl implements OpenAIService {
         Optional<String> campaignPrompt = Optional.empty();
         try {
             final String prompt = resource.getContentAsString(StandardCharsets.UTF_8);
-            campaignPrompt = BasicValidator.isValidString(prompt) ? Optional.of(prompt) : Optional.empty();
+            campaignPrompt = Validator.isValidString(prompt) ? Optional.of(prompt) : Optional.empty();
         } catch (IOException e) {
             log.error("[getPrompt]: error getting prompt: {}", e.getMessage());
         }

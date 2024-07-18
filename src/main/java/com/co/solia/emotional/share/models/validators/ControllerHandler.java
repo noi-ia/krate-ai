@@ -3,6 +3,7 @@ package com.co.solia.emotional.share.models.validators;
 
 import com.co.solia.emotional.share.models.dtos.rs.DefaultRsDto;
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
+import com.co.solia.emotional.share.models.exceptions.CreatedException;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,23 @@ public class ControllerHandler {
      */
     @ExceptionHandler(value = {InternalServerException.class, Exception.class})
     public ResponseEntity<DefaultRsDto> internalException(final InternalServerException ise) {
-        log.error("[internalException]: Error catching: message: {}, endpoint: {}", ise.getMessage(), ise.getEndpoint());
+        log.error("[internalException]: Error catch: message: {}, endpoint: {}", ise.getMessage(), ise.getEndpoint());
         logError(ise);
         return ResponseEntity.status(HttpStatusCode.valueOf(500))
                 .body(DefaultRsDto.builder().message(ise.getMessage()).endpoint(ise.getEndpoint()).build());
+    }
+
+    /**
+     * {@link ExceptionHandler} for {@link CreatedException}.
+     * @param ce {@link CreatedException} to catch.
+     * @return {@link ExceptionHandler} for {@link DefaultRsDto}.
+     */
+    @ExceptionHandler(value = {CreatedException.class})
+    public ResponseEntity<DefaultRsDto> createdException(final CreatedException ce) {
+        log.warn("[createdException]: Error catch: message: {}, endpoint: {}", ce.getMessage(), ce.getEndpoint());
+        logError(ce);
+        return ResponseEntity.status(HttpStatusCode.valueOf(201))
+                .body(DefaultRsDto.builder().message(ce.getMessage()).endpoint(ce.getEndpoint()).build());
     }
 
     /**
@@ -42,7 +56,7 @@ public class ControllerHandler {
      */
     @ExceptionHandler(value = BadRequestException.class)
     public ResponseEntity<DefaultRsDto> badRequestException(final BadRequestException bre) {
-        log.error("[badRequestException]: Error catching: message: {}, endpoint: {}", bre.getMessage(), bre.getEndpoint());
+        log.error("[badRequestException]: Error catch: message: {}, endpoint: {}", bre.getMessage(), bre.getEndpoint());
         logError(bre);
         return ResponseEntity.status(HttpStatusCode.valueOf(400))
                 .body(DefaultRsDto.builder().message(bre.getMessage()).endpoint(bre.getEndpoint()).build());
@@ -55,7 +69,7 @@ public class ControllerHandler {
      */
     @ExceptionHandler(value = NotFoundException.class)
     public ResponseEntity<DefaultRsDto> NotFoundException(final NotFoundException nfe) {
-        log.error("[NotFoundException]: Error catching: message: {}, endpoint: {}", nfe.getMessage(), nfe.getEndpoint());
+        log.error("[NotFoundException]: Error catch: message: {}, endpoint: {}", nfe.getMessage(), nfe.getEndpoint());
         logError(nfe);
         return ResponseEntity.status(HttpStatusCode.valueOf(404))
                 .body(DefaultRsDto.builder().message(nfe.getMessage()).endpoint(nfe.getEndpoint()).build());

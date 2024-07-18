@@ -1,6 +1,7 @@
 package com.co.solia.emotional.share.models.validators;
 
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
+import com.co.solia.emotional.plan.models.dtos.rq.CreatePlanRqDto;
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class ServiceValidator {
      */
     public static void validateMessage(final String message, final String endpoint) {
         Stream.of(message)
-                .filter(BasicValidator::isValidString)
+                .filter(Validator::isValidString)
                 .findFirst()
                 .ifPresentOrElse(validMessage ->
                                 log.info("[validateMessage]: message is valid to process.")
@@ -41,7 +42,7 @@ public class ServiceValidator {
      * validate the id of emotional estimation.
      * @param id estimation id.
      */
-    public static void validateId(final UUID id, final String endpoint){
+    public static void validateId(final UUID id, final String endpoint) {
         Stream.of(id)
                 .filter(Objects::nonNull)
                 .findFirst()
@@ -82,9 +83,24 @@ public class ServiceValidator {
      * @param rq to validate.
      */
     public static void validateCampaignRq(final CampaignRqDto rq) {
-        BasicValidator.isValidField(BasicValidator.isValidId(rq.getKeyphraseId()), "keyphrase");
-        BasicValidator.isValidField(BasicValidator.isValidId(rq.getBrandId()), "brandId");
-        BasicValidator.isValidField(BasicValidator.isValidId(rq.getEmotionalId()), "emotionalId");
+        Validator.isValidField(Validator.isValidId(rq.getKeyphraseId()), "keyphrase", "/campaign/");
+        Validator.isValidField(Validator.isValidId(rq.getBrandId()), "brandId", "/campaign/");
+        Validator.isValidField(Validator.isValidId(rq.getEmotionalId()), "emotionalId", "/campaign/");
         log.info("[validateComputeCampaign]: the data is valid to generate the campaign.");
+    }
+
+    /**
+     * validate the data for create a new plan.
+     * @param rq request with the data to create a new plan.
+     * @param adminCode authorization to create the plan.
+     */
+    public static void validateCreatePlan(final CreatePlanRqDto rq, final String adminCode) {
+        Validator.isValidField(Validator.isValidString(adminCode),"adminCode", "/plan/");
+        Validator.isValidField(Validator.isValidString(rq.name()), "name", "/plan/");
+        Validator.isValidField(Validator.isValidInteger(rq.camsByMonth()), "camsByMonth", "/plan/");
+        Validator.isValidField(Validator.isValidInteger(rq.refreshByCam()), "refreshByCam", "/plan/");
+        Validator.isValidField(Validator.isValidBigDecimal(rq.priceMonth()), "priceMonth", "/plan/");
+        Validator.isValidField(Validator.isValidBigDecimal(rq.priceYear()), "priceYear", "/plan/");
+        log.info("[validateCreatePlan]: the data is valid to generate the campaign.");
     }
 }

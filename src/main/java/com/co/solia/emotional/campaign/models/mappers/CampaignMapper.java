@@ -3,7 +3,7 @@ package com.co.solia.emotional.campaign.models.mappers;
 import com.co.solia.emotional.campaign.models.daos.CampaignDao;
 import com.co.solia.emotional.campaign.models.dtos.dtos.CampaignDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -110,8 +110,8 @@ public class CampaignMapper {
     public static Optional<CampaignRsDto> getRsFromDao(final CampaignDao dao) {
         return Stream.of(dao)
                 .filter(Objects::nonNull)
-                .filter(d -> BasicValidator.isValidId(d.getId()))
-                .filter(d -> BasicValidator.isValidString(d.getName()))
+                .filter(d -> Validator.isValidId(d.getId()))
+                .filter(d -> Validator.isValidString(d.getName()))
                 .findFirst()
                 .map(CampaignMapper::getRsFromCampaignDao);
     }

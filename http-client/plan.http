@@ -1,0 +1,21 @@
+### create a plan
+POST localhost:8080/1/plan/
+Content-Type: application/json
+x-a-x: 1232
+
+{
+  "name": "free",
+  "camsByMonth": 1,
+  "refreshByCam": 1,
+  "priceMonth": 0,
+  "priceYear": 0
+}
+
+### Get by id.
+GET http://localhost:8080/1/plan/id/f65e3229-240e-43b8-b471-024f1f1d9361
+
+### Get by name.
+GET http://localhost:8080/1/plan/name/free
+
+### Get all.
+GET http://localhost:8080/1/plan/

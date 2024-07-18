@@ -3,7 +3,7 @@ package com.co.solia.emotional.brand.models.mappers;
 import com.co.solia.emotional.brand.models.daos.BrandDao;
 import com.co.solia.emotional.brand.models.dtos.rq.BrandRqDto;
 import com.co.solia.emotional.brand.models.dtos.rs.BrandRsDto;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,9 +34,9 @@ public class BrandMapper {
             final UUID userId) {
         return Stream.of(rq)
                 .filter(Objects::nonNull)
-                .filter(r -> BasicValidator.isValidString(r.getName()))
-                .filter(r -> BasicValidator.isValidString(r.getCompetitors()))
-                .filter(r -> BasicValidator.isValidString(r.getDescription()))
+                .filter(r -> Validator.isValidString(r.getName()))
+                .filter(r -> Validator.isValidString(r.getCompetitors()))
+                .filter(r -> Validator.isValidString(r.getDescription()))
                 .findFirst()
                 .map(r -> getDaoFrom(r, id, userId));
     }

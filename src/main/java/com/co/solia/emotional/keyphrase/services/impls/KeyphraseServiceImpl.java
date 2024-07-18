@@ -12,7 +12,7 @@ import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.keyphrase.models.mappers.KeyphraseMapper;
 import com.co.solia.emotional.keyphrase.models.repos.KeyphrasesRepo;
 import com.co.solia.emotional.keyphrase.services.services.KeyphraseService;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +103,7 @@ public class KeyphraseServiceImpl implements KeyphraseService {
             final EmotionEnum emotion,
             final UUID userId) {
         final UUID id = UUID.randomUUID();
-        final long start = BasicValidator.getNow();
+        final long start = Validator.getNow();
         log.info("[computeKeyphrases]: ready to get the keyphrases.");
         return computeKeyphrases(emotionalRs, emotion)
                 .flatMap(chat -> mapAndSaveKeyphrases(emotionalRs, emotion, userId, chat, id, start));
@@ -188,7 +188,7 @@ public class KeyphraseServiceImpl implements KeyphraseService {
      * @return duration of keyphrase process.
      */
     private static long getDuration(long start) {
-        return BasicValidator.getDuration(start);
+        return Validator.getDuration(start);
     }
 
     /**

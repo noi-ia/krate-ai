@@ -13,7 +13,7 @@ import com.co.solia.emotional.campaign.models.repos.CampaignRepo;
 import com.co.solia.emotional.campaign.services.services.CampaignService;
 import com.co.solia.emotional.share.clients.clients.EmotionalClient;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
-import com.co.solia.emotional.share.models.validators.BasicValidator;
+import com.co.solia.emotional.share.models.validators.Validator;
 import com.co.solia.emotional.share.models.validators.ServiceValidator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
@@ -143,10 +143,10 @@ public class CampaignServiceImpl implements CampaignService {
             final Map<String, Double> emotions,
             final UUID userId, final UUID emotionsId) {
         log.info("[generateCampaign]: ready to generate campaign for userId: {}, brandId: {}", userId, brand.id());
-        final long start = BasicValidator.getNow();
+        final long start = Validator.getNow();
         final UUID id = UUID.randomUUID();
         return openAIService.getCampaign(getRqCampaignOpenai(brand, emotions, keyphrase)).flatMap(chat ->
-            mapAndSave(chat, BasicValidator.getDuration(start), id, keyphrase, brand.id(), userId, emotionsId)
+            mapAndSave(chat, Validator.getDuration(start), id, keyphrase, brand.id(), userId, emotionsId)
                     .flatMap(CampaignMapper::getRsFromDao)
         );
     }

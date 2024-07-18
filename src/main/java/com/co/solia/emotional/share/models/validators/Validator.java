@@ -4,6 +4,7 @@ import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
  */
 @UtilityClass
 @Slf4j
-public class BasicValidator {
+public class Validator {
 
     /**
      * validate the string field.
@@ -33,6 +34,24 @@ public class BasicValidator {
      * */
     public static Boolean isValidId(final UUID id) {
         return id != null;
+    }
+
+    /**
+     * validate a positive integer.
+     * @param value value to validate.
+     * @return {@link Boolean}.
+     */
+    public static Boolean isValidInteger(final Integer value){
+        return value != null && value >= 0;
+    }
+
+    /**
+     * validate a positive {@link BigDecimal}.
+     * @param value value to validate.
+     * @return {@link Boolean}.
+     */
+    public static Boolean isValidBigDecimal(final BigDecimal value){
+        return value != null && value.signum() >= 0;
     }
 
     /**
@@ -67,14 +86,15 @@ public class BasicValidator {
      * @param isValid evaluation of the field
      * @param field to be validated.
      */
-    public void isValidField(final Boolean isValid, final String field) {
+    public void isValidField(final Boolean isValid, final String field, final String endpoint) {
         Stream.of(isValid)
                 .filter(Boolean.FALSE::equals)
                 .findFirst()
                 .map(valid -> {
-                    log.error("[isValidField] the field {} is invalid, please check it out.", field);
+                    log.error("[isValidField] the field {} is invalid, please check it out in the endpoint: {}",
+                            field, endpoint);
                     throw BadRequestException.builder()
-                            .endpoint("/campaign/compute")
+                            .endpoint(endpoint)
                             .message("the field " + field +  " is invalid, please check it out")
                             .build();
                 });
