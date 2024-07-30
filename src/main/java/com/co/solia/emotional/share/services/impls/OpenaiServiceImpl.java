@@ -4,7 +4,7 @@ import com.co.solia.emotional.campaign.models.dtos.rq.CampaignOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseOpenaiRqDto;
 import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -46,26 +46,6 @@ public class OpenaiServiceImpl implements OpenAIService {
     private final String OPENAI_APIKEY;
 
     /**
-     * prompt to do emotional_estimation.
-     */
-    private final String PROMPT_EMOTIONAL;
-
-    /**
-     * prompt to do emotional estimation in multiple message.
-     */
-    private final String PROMPT_EMOTIONAL_UNIQUE;
-
-    /**
-     * prompt to clean the comment.
-     */
-    private final String PROMPT_CLEAN;
-
-    /**
-     * prompt to clean the comment.
-     */
-    private final String PROMPT_KEYPHRASE;
-
-    /**
      * openai model used.
      */
     private final String OPENAI_MODEL;
@@ -74,34 +54,58 @@ public class OpenaiServiceImpl implements OpenAIService {
      * json format return from openai.
      */
     private static final String JSOM_FORMAT_OPENAI = "json_object";
+
+    /**
+     * prompt to do campaign.
+     */
     private final Resource promptCampaign;
 
     /**
-     * default constructor for openaiService.
-     * @param openaiApikey
-     * @param promptEmotional
-     * @param promptEmotionalUnique
-     * @param openaiModel
-     * @param promptClean
-     * @param promptKeyphrase
-     * @param promptCampaign
+     * prompt to do emotional_estimation.
+     */
+    private final Resource promptEmotional;
+
+    /**
+     * prompt to do emotional estimation in multiple message.
+     */
+    private final Resource promptEmotionalUnique;
+
+    /**
+     * prompt to clean the comment.
+     */
+    private final Resource promptClean;
+
+    /**
+     * prompt to get the keyphrases.
+     */
+    private final Resource promptKeyphrase;
+
+    /**
+     * the basic constructor for get all required parameters.
+     * @param openaiApikey openai api key.
+     * @param openaiModel openai model.
+     * @param promptKeyphrase prompt for keyphrases.
+     * @param promptCampaign prompt for campaign.
+     * @param promptEmotional prompt for emotional estimation.
+     * @param promptEmotionalUnique prompt for emotional unique estimation.
+     * @param promptClean prompt to clean.
      */
     @Autowired
     public OpenaiServiceImpl(
             @Value("${solia.emotional.openai.apikey}") final String openaiApikey,
-            @Value("${solia.emotional.openai.prompt.emotional}") final String promptEmotional,
-            @Value("${solia.emotional.openai.prompt.emotional.unique}") final String promptEmotionalUnique,
             @Value("${solia.emotional.openai.model}") final String openaiModel,
-            @Value("${solia.emotional.openai.prompt.clean}") final String promptClean,
-            @Value("${solia.emotional.openai.prompt.keyphrase}") final String promptKeyphrase,
-            @Value("classpath:templates/campaign_prompt.st") final Resource promptCampaign){
+            @Value("classpath:templates/prompt_keyphrase.st") final Resource promptKeyphrase,
+            @Value("classpath:templates/prompt_campaign.st") final Resource promptCampaign,
+            @Value("classpath:templates/prompt_emotional.st") final Resource promptEmotional,
+            @Value("classpath:templates/prompt_emotional_unique.st") final Resource promptEmotionalUnique,
+            @Value("classpath:templates/prompt_clean.st") final Resource promptClean){
         this.OPENAI_APIKEY = openaiApikey;
-        this.PROMPT_EMOTIONAL = promptEmotional;
-        this.PROMPT_EMOTIONAL_UNIQUE = promptEmotionalUnique;
         this.OPENAI_MODEL = openaiModel;
-        this.PROMPT_CLEAN = promptClean;
-        this.PROMPT_KEYPHRASE = promptKeyphrase;
+        this.promptClean = promptClean;
+        this.promptKeyphrase = promptKeyphrase;
         this.promptCampaign = promptCampaign;
+        this.promptEmotional = promptEmotional;
+        this.promptEmotionalUnique = promptEmotionalUnique;
     }
 
     /**
@@ -512,8 +516,16 @@ public class OpenaiServiceImpl implements OpenAIService {
      * method to get the system message in {@link ChatCompletionMessage} format to emotional compute.
      * @return {@link ChatCompletionMessage}.
      */
-    private ChatCompletionMessage getSysMessEmotional(){
-        return new ChatCompletionMessage(PROMPT_EMOTIONAL, Role.SYSTEM);
+    private ChatCompletionMessage getSysMessEmotional() {
+        return getPrompt(promptEmotional)
+                .map(campaign -> new ChatCompletionMessage(campaign, Role.SYSTEM))
+                .orElseGet(() -> {
+                    log.error("[getSysMessEmotional]: error getting system message for emotional estimation.");
+                    throw InternalServerException.builder()
+                            .message("error getting system message for emotional estimation.")
+                            .endpoint("/emotional/compute/")
+                            .build();
+                });
     }
 
     /**
@@ -521,7 +533,15 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @return {@link ChatCompletionMessage}.
      */
     private ChatCompletionMessage getSysMessEmotionalUnique(){
-        return new ChatCompletionMessage(PROMPT_EMOTIONAL_UNIQUE, Role.SYSTEM);
+        return getPrompt(promptEmotionalUnique)
+                .map(campaign -> new ChatCompletionMessage(campaign, Role.SYSTEM))
+                .orElseGet(() -> {
+                    log.error("[getSysMessEmotionalUnique]: error getting system message for emotional unique estimation.");
+                    throw InternalServerException.builder()
+                            .message("error getting system message for emotional unique estimation.")
+                            .endpoint("/emotional/compute/unique/")
+                            .build();
+                });
     }
 
     /**
@@ -535,7 +555,7 @@ public class OpenaiServiceImpl implements OpenAIService {
                             log.error("[getSysMessCampaign]: error getting system message for campaign");
                             throw InternalServerException.builder()
                                     .message("error getting system message for campaign")
-                                    .endpoint("/campaign/")
+                                    .endpoint("/campaign/compute/")
                                     .build();
                         });
     }
@@ -564,7 +584,15 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @return {@link ChatCompletionMessage}.
      */
     private ChatCompletionMessage getSysMessClean(){
-        return new ChatCompletionMessage(PROMPT_CLEAN, Role.SYSTEM);
+        return getPrompt(promptClean)
+                .map(campaign -> new ChatCompletionMessage(campaign, Role.SYSTEM))
+                .orElseGet(() -> {
+                    log.error("[getSysMessClean]: error getting system message for clean");
+                    throw InternalServerException.builder()
+                            .message("error getting system message for clean.")
+                            .endpoint("/clean/compute/")
+                            .build();
+                });
     }
 
     /**
@@ -572,7 +600,15 @@ public class OpenaiServiceImpl implements OpenAIService {
      * @return {@link ChatCompletionMessage}.
      */
     private ChatCompletionMessage getSysMessKeyphrase(){
-        return new ChatCompletionMessage(PROMPT_KEYPHRASE, Role.SYSTEM);
+        return getPrompt(promptKeyphrase)
+                .map(campaign -> new ChatCompletionMessage(campaign, Role.SYSTEM))
+                .orElseGet(() -> {
+                    log.error("[getSysMessKeyphrase]: error getting system message for keyphrases");
+                    throw InternalServerException.builder()
+                            .message("error getting system message for keyphrases.")
+                            .endpoint("/keyphrase/compute/")
+                            .build();
+                });
     }
 
 }

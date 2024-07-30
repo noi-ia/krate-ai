@@ -1,0 +1,34 @@
+name: Deploy to AWS
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build Project
+        run: mvn clean install -DskipTests
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'eu-north-1'
+          mongo-db: ${{secrets.MONGO_DB}}
+          mongo-host: ${{secrets.MONGO_HOST}}
+          mongo-port: ${{secrets.MONGO_PORT}}
+          mongo-user: ${{secrets.MONGO_USER}}
+          openai-apikey: ${{secrets.OPENAI_APIKEY}}
+          openai-model: ${{secrets.OPENAI_MODEL}}
+          prompt-clean: ${{secrets.PROMPT_CLEAN}}
+          prompt-emotional: ${{secrets.PROMPT_EMOTIONAL}}
+          prompt-emotional-unique: ${{secrets.PROMPT_EMOTIONAL_UNIQUE}}
+          prompt-keyphrase: ${{secrets.PROMPT_KEYPHRASE}}

@@ -2,7 +2,7 @@ package com.co.solia.emotional.customer.models.mappers;
 
 import com.co.solia.emotional.customer.models.daos.CustomerDao;
 import com.co.solia.emotional.customer.models.dtos.rs.CreateCustomerRsDto;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

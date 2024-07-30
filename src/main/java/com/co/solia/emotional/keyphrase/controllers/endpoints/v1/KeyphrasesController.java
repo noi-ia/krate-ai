@@ -2,7 +2,7 @@ package com.co.solia.emotional.keyphrase.controllers.endpoints.v1;
 
 import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphraseRsDto;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
-import com.co.solia.emotional.share.models.validators.ServiceValidator;
+import com.co.solia.emotional.share.utils.validators.ServiceValidator;
 import com.co.solia.emotional.keyphrase.controllers.docs.KeyphraseControllerDocs;
 import com.co.solia.emotional.keyphrase.models.dtos.rq.KeyphraseRqDto;
 import com.co.solia.emotional.keyphrase.models.dtos.rs.KeyphrasesRsDto;

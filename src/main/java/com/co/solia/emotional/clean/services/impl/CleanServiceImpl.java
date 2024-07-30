@@ -10,7 +10,7 @@ import com.co.solia.emotional.clean.models.mappers.CleanMapper;
 import com.co.solia.emotional.clean.models.repos.CleanBatchRepo;
 import com.co.solia.emotional.clean.models.repos.CleanRepo;
 import com.co.solia.emotional.clean.services.services.CleanService;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;

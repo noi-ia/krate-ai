@@ -51,19 +51,19 @@ public interface PlanService {
      * @param rq to update a plan.
      * @return {@link Optional} of {@link UpdatePlanRsDto}.
      */
-    Optional<UpdatePlanRsDto>update(UUID id, UpdatePlanRqDto rq);
+    Optional<UpdatePlanRsDto>update(UUID id, UpdatePlanRqDto rq, String adminCode);
 
     /**
      * delete a plan by id.
      * @param id plan identifier.
      * @return {@link Optional} of {@link DefaultRsDto}.
      */
-    Optional<DefaultRsDto>deleteById(UUID id);
+    Optional<DefaultRsDto>deleteById(UUID id, String adminCode);
 
     /**
      * delete a plan by name.
      * @param name plan name.
      * @return {@link Optional} of {@link DefaultRsDto}.
      */
-    Optional<DefaultRsDto>deleteByName(String name);
+    Optional<DefaultRsDto>deleteByName(String name, String adminCode);
 }

@@ -3,7 +3,7 @@ package com.co.solia.emotional.campaign.models.mappers;
 import com.co.solia.emotional.campaign.models.daos.CampaignDao;
 import com.co.solia.emotional.campaign.models.dtos.dtos.CampaignDto;
 import com.co.solia.emotional.campaign.models.dtos.rs.CampaignRsDto;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;

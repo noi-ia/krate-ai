@@ -12,7 +12,7 @@ import com.co.solia.emotional.keyphrase.models.enums.EmotionEnum;
 import com.co.solia.emotional.keyphrase.models.mappers.KeyphraseMapper;
 import com.co.solia.emotional.keyphrase.models.repos.KeyphrasesRepo;
 import com.co.solia.emotional.keyphrase.services.services.KeyphraseService;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import com.co.solia.emotional.share.services.services.OpenAIService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

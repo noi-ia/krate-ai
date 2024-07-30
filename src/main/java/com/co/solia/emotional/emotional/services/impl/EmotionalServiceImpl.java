@@ -14,7 +14,7 @@ import com.co.solia.emotional.emotional.models.repos.EmotionalBatchRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalRepo;
 import com.co.solia.emotional.emotional.models.repos.EmotionalUniqueRepo;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import com.co.solia.emotional.share.services.services.OpenAIService;

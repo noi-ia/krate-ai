@@ -1,4 +1,4 @@
-### compute a message.
+## compute a message.
 POST localhost:8080/1/emotional/compute/
 Content-Type: application/json
 
@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 ### get message processed by id emotional estimation.
-GET localhost:8080/1/emotional/98ac2ee9-37b1-444a-b20e-941fabf8b61a
+GET localhost:8080/1/emotional/compute/4b530067-91fe-42de-8e2a-3aee0b6d56b9
 
 
 ### compute a list
@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### get all message processed by batch id.
-GET localhost:8080/1/emotional/batch/217fb220-3d75-4b9f-a12e-2a6e45ce6227
+GET localhost:8080/1/emotional/compute/batch/ffcbdafa-8b0d-4ff9-a2bb-6ed96289dbae
 
 ### create a emotional unique comput
 POST localhost:8080/1/emotional/compute/unique/

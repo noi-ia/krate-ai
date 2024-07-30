@@ -5,7 +5,7 @@ import com.co.solia.emotional.clean.models.dtos.rq.CleanBatchRqDto;
 import com.co.solia.emotional.clean.models.dtos.rq.CleanRqDto;
 import com.co.solia.emotional.clean.models.dtos.rs.CleanBatchRsDto;
 import com.co.solia.emotional.clean.models.dtos.rs.CleanRsDto;
-import com.co.solia.emotional.share.models.validators.ServiceValidator;
+import com.co.solia.emotional.share.utils.validators.ServiceValidator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.clean.services.services.CleanService;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;

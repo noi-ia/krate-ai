@@ -10,12 +10,12 @@ import com.co.solia.emotional.plan.services.services.PlanService;
 import com.co.solia.emotional.share.models.dtos.rs.DefaultRsDto;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
-import com.co.solia.emotional.share.models.validators.ServiceValidator;
+import com.co.solia.emotional.share.utils.validators.ServiceValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -136,9 +136,10 @@ public class PlanController implements PlanControllerDocs {
     @Override
     public ResponseEntity<UpdatePlanRsDto> update(
             @PathVariable("id") final UUID id,
-            @RequestBody final UpdatePlanRqDto rq) {
-        ServiceValidator.validateUpdatePlan(id, rq);
-        return planService.update(id, rq)
+            @RequestBody final UpdatePlanRqDto rq,
+            @RequestHeader("x-a-x") final String adminCode) {
+        ServiceValidator.validateUpdatePlan(id, rq, adminCode);
+        return planService.update(id, rq, adminCode)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> {
                     log.error("[update]: error updating the plan: {} please try again.", id);
@@ -155,8 +156,11 @@ public class PlanController implements PlanControllerDocs {
      * @param id plan identifier.
      * @return {@link ResponseEntity} of {@link DefaultRsDto}.
      */
+    @DeleteMapping("/id/{id}")
     @Override
-    public ResponseEntity<DefaultRsDto> deleteById(UUID id) {
+    public ResponseEntity<DefaultRsDto> deleteById(@PathVariable("id") final UUID id,
+                                                   @RequestHeader("x-a-x") final String adminCode) {
+        ServiceValidator.validateId(id, "/plan/{id}");
         return null;
     }
 
@@ -167,7 +171,7 @@ public class PlanController implements PlanControllerDocs {
      * @return {@link ResponseEntity} of {@link DefaultRsDto}.
      */
     @Override
-    public ResponseEntity<DefaultRsDto> deleteByName(String name) {
+    public ResponseEntity<DefaultRsDto> deleteByName(final String name, final String adminCode) {
         return null;
     }
 }

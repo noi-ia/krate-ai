@@ -1,4 +1,4 @@
-package com.co.solia.emotional.share.models.validators;
+package com.co.solia.emotional.share.utils.validators;
 
 import com.co.solia.emotional.share.models.exceptions.BadRequestException;
 import lombok.experimental.UtilityClass;

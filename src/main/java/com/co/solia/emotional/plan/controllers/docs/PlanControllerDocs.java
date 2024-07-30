@@ -49,19 +49,19 @@ public interface PlanControllerDocs {
      * @param rq to update a plan.
      * @return {@link ResponseEntity} of {@link UpdatePlanRsDto}.
      */
-    ResponseEntity<UpdatePlanRsDto>update(UUID id, UpdatePlanRqDto rq);
+    ResponseEntity<UpdatePlanRsDto>update(UUID id, UpdatePlanRqDto rq, String adminCode);
 
     /**
      * delete a plan by id.
      * @param id plan identifier.
      * @return {@link ResponseEntity} of {@link DefaultRsDto}.
      */
-    ResponseEntity<DefaultRsDto>deleteById(UUID id);
+    ResponseEntity<DefaultRsDto>deleteById(UUID id, String adminCode);
 
     /**
      * delete a plan by name.
      * @param name plan name.
      * @return {@link ResponseEntity} of {@link DefaultRsDto}.
      */
-    ResponseEntity<DefaultRsDto>deleteByName(String name);
+    ResponseEntity<DefaultRsDto>deleteByName(String name, String adminCode);
 }

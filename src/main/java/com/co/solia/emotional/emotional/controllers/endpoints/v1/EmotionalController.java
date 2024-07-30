@@ -7,7 +7,7 @@ import com.co.solia.emotional.emotional.models.dtos.rq.EmotionalBatchRqDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalBatchRsDto;
 import com.co.solia.emotional.emotional.models.dtos.rs.EmotionalUniqueRsDto;
 import com.co.solia.emotional.emotional.services.services.EmotionalService;
-import com.co.solia.emotional.share.models.validators.ServiceValidator;
+import com.co.solia.emotional.share.utils.validators.ServiceValidator;
 import com.co.solia.emotional.share.models.exceptions.InternalServerException;
 import com.co.solia.emotional.share.models.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;

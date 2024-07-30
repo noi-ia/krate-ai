@@ -3,7 +3,7 @@ package com.co.solia.emotional.brand.models.mappers;
 import com.co.solia.emotional.brand.models.daos.BrandDao;
 import com.co.solia.emotional.brand.models.dtos.rq.BrandRqDto;
 import com.co.solia.emotional.brand.models.dtos.rs.BrandRsDto;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

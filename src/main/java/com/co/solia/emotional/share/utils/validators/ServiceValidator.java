@@ -1,4 +1,4 @@
-package com.co.solia.emotional.share.models.validators;
+package com.co.solia.emotional.share.utils.validators;
 
 import com.co.solia.emotional.campaign.models.dtos.rq.CampaignRqDto;
 import com.co.solia.emotional.plan.models.dtos.rq.CreatePlanRqDto;
@@ -110,7 +110,8 @@ public class ServiceValidator {
      * @param id plan identifier.
      * @param rq data to update the plan with.
      */
-    public static void validateUpdatePlan(final UUID id, final UpdatePlanRqDto rq){
+    public static void validateUpdatePlan(final UUID id, final UpdatePlanRqDto rq, final String adminCode) {
+        Validator.isValidField(Validator.isValidString(adminCode), "adminCode", "/plan/{id}");
         Validator.isValidField(Validator.isValidId(id), "id", "/plan/{id}");
         Validator.isValidField(validatePrices(rq), "prices", "/plan/{id}");
         log.info("[validateUpdatePlan]: the data is valid to update the plan.");

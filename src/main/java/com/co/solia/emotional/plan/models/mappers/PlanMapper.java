@@ -5,7 +5,7 @@ import com.co.solia.emotional.plan.models.dtos.rq.CreatePlanRqDto;
 import com.co.solia.emotional.plan.models.dtos.rs.CreatePlanRsDto;
 import com.co.solia.emotional.plan.models.dtos.rs.GetPlanRsDto;
 import com.co.solia.emotional.plan.models.dtos.rs.UpdatePlanRsDto;
-import com.co.solia.emotional.share.models.validators.Validator;
+import com.co.solia.emotional.share.utils.validators.Validator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
