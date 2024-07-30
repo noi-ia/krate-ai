@@ -8,12 +8,14 @@ jobs:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
+      - name: validaciones
+        run: java --version
       - name: Build Project
         run: mvn clean install -DskipTests
       - name: Configure AWS credentials
