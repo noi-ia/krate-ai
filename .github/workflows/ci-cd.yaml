@@ -46,7 +46,7 @@ jobs:
       - name: build, tag, and push
         id: build-image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs:registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo "variable $ECR_REGISTRY"
