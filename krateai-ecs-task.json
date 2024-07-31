@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-2:010438502109:task-definition/krateai-ecs-task:1",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:010438502109:task-definition/krateai-ecs-task:1",
     "containerDefinitions": [
         {
             "name": "krate-ai",
@@ -24,6 +24,7 @@
         }
     ],
     "family": "krateai-ecs-task",
+    "taskRoleArn": "arn:aws:iam::010438502109:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::010438502109:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "revision": 1,
@@ -32,6 +33,9 @@
     "requiresAttributes": [
         {
             "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
@@ -57,7 +61,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-07-27T03:15:01.789Z",
+    "registeredAt": "2024-07-31T06:13:22.231Z",
     "registeredBy": "arn:aws:iam::010438502109:user/admin",
     "tags": []
 }

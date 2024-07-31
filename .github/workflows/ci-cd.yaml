@@ -50,7 +50,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
-          REPOSITORY: krate
+          REPOSITORY: krate-ai
         run: |
           echo "variable $ECR_REGISTRY"
           echo "variable $IMAGE_TAG"
@@ -72,6 +72,6 @@ jobs:
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: krate-ai
-          cluster: krateai
+          cluster: krate-ai
           wait-for-service-stability: true
 
