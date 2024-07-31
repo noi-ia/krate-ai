@@ -50,6 +50,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          REPOSITORY: krateai
         run: |
           echo "variable $ECR_REGISTRY"
           echo "variable $IMAGE_TAG"
