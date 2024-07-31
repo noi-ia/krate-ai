@@ -9,15 +9,19 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
+
       - name: validaciones
         run: java --version
+
       - name: Build Project
         run: mvn clean install -DskipTests
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -34,3 +38,36 @@ jobs:
           prompt-emotional: ${{secrets.PROMPT_EMOTIONAL}}
           prompt-emotional-unique: ${{secrets.PROMPT_EMOTIONAL_UNIQUE}}
           prompt-keyphrase: ${{secrets.PROMPT_KEYPHRASE}}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: build, tag, and push
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs:registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "variable $ECR_REGISTRY"
+          echo "variable $IMAGE_TAG"
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: krateai-ecs-task.json
+          container-name: krate-ai
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: krate-ai
+          cluster: krate-ai-2
+          wait-for-service-stability: true
+
