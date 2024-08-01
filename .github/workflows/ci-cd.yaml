@@ -17,7 +17,11 @@ jobs:
           java-version: '21'
 
       - name: validaciones
-        run: java --version
+        run: |
+          java --version
+          echo ${{ secrets.MONGO_DB}}
+          echo ${{ secrets.MONGO_PASS}}
+          echo ${{ secrets.MONGO_USER}}
 
       - name: Build Project
         run: mvn clean install -DskipTests

@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### get all message processed by batch id.
-GET localhost:8080/1/emotional/compute/batch/ffcbdafa-8b0d-4ff9-a2bb-6ed96289dbae
+GET localhost:8080/1/emotional/compute/batch/1c41b8f4-e7cb-4f30-947a-8692f7d026e9
 
 ### create a emotional unique comput
 POST localhost:8080/1/emotional/compute/unique/

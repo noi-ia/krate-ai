@@ -2,6 +2,7 @@ package com.co.solia.emotional;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 /**
  * the entry point of solia monolithic.
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author luis.bolivar
  */
 @SpringBootApplication()
+@EnableMongoRepositories
 public class EmotionalApplication {
 
 	/**
