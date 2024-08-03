@@ -1,14 +1,13 @@
 name: Deploy to AWS
 on:
   workflow_run:
-    workflows: ["Integrate to AWS"]
+    workflows: ['ci']
     types:
       - completed
 jobs:
   build:
-    runs-on: i-01ec11e6a0dae0fe8
+    runs-on: self-hosted
     steps:
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:

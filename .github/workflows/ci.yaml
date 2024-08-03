@@ -1,4 +1,4 @@
-name: Integrate to AWS
+name: ci
 on:
   push:
     branches: [ main ]
