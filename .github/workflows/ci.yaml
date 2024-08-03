@@ -1,4 +1,4 @@
-name: Deploy to AWS
+name: Integrate to AWS
 on:
   push:
     branches: [ main ]
@@ -63,19 +63,7 @@ jobs:
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: krateai-ecs-task.json
-          container-name: krate-ai
-          image: ${{ steps.build-image.outputs.image }}
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: krate-ai
-          cluster: krate-ai
-          wait-for-service-stability: true
+      - name: validar la imagen
+        id: validate-imae
+        run: echo $GITHUB_OUTPUT
 
