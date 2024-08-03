@@ -6,7 +6,7 @@ on:
       - completed
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: i-01ec11e6a0dae0fe8
     steps:
 
       - name: Configure AWS credentials
