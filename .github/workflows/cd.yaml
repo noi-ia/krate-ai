@@ -34,6 +34,10 @@ jobs:
 
       - name: delete, pull image
         id: pull-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          REPOSITORY: krate-ai
         run: |
           sudo yum update -y
           sudo yum install docker -y
@@ -42,4 +46,4 @@ jobs:
           docker --version
           sudo chmod 666 /var/run/docker.sock
           docker rmi -f krate-ai
-          docker pull 010438502109.dkr.ecr.us-east-1.amazonaws.com/krate-ai:latest
+          docker pull $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
