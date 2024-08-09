@@ -9,6 +9,8 @@ jobs:
     runs-on: self-hosted
     environment: test
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -29,4 +31,4 @@ jobs:
         id: pull-image
         run: |
           docker rmi krate-ai
-         
+          docker pull 010438502109.dkr.ecr.us-east-1.amazonaws.com/krate-ai:latest
