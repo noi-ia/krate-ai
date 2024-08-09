@@ -28,5 +28,5 @@ jobs:
       - name: delete, pull image
         id: pull-image
         run: |
-          docker rm -f krate-ai
+          docker rmi -f krate-ai
           docker pull 010438502109.dkr.ecr.us-east-1.amazonaws.com/krate-ai:latest
