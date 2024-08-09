@@ -25,13 +25,19 @@ jobs:
           prompt-emotional: ${{secrets.PROMPT_EMOTIONAL}}
           prompt-emotional-unique: ${{secrets.PROMPT_EMOTIONAL_UNIQUE}}
           prompt-keyphrase: ${{secrets.PROMPT_KEYPHRASE}}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'true'
+
       - name: delete, pull image
         id: pull-image
         run: |
           sudo yum update -y
           sudo yum install docker -y
           sudo systemctl start docker
-          sudo docker run hello-world
           sudo systemctl enable docker
           docker --version
           sudo chmod 666 /var/run/docker.sock
