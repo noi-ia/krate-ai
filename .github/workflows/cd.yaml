@@ -47,3 +47,10 @@ jobs:
           sudo chmod 666 /var/run/docker.sock
           docker rmi -f krate-ai
           docker pull $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker images
+
+      - name: run krate-ai
+        id: run-krate-ai
+        run: |
+          echo "Empezamos a correr el servicio"
+          docker run -e MONGO_DB=$MONGO_DB -e MONGO_HOST=$MONGO_HOST -e MONGO_PASS=$MONGO_PASS -e MONGO_PORT=$MONGO_PORT -e MONGO_USER=$MONGO_USER -e OPENAI_APIKEY=$OPENAI_APIKEY -e OPENAI_MODEL=$OPENAI_MODEL -p 8080:8080 krate-ai
