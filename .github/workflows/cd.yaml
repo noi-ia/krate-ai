@@ -36,3 +36,4 @@ jobs:
           docker --version
           sudo chmod 666 /var/run/docker.sock
           docker rmi -f krate-ai
+          docker pull 010438502109.dkr.ecr.us-east-1.amazonaws.com/krate-ai:latest
