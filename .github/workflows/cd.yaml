@@ -34,5 +34,4 @@ jobs:
           sudo docker run hello-world
           sudo systemctl enable docker
           docker --version
-          docker rmi krate-ai
-          docker pull 010438502109.dkr.ecr.us-east-1.amazonaws.com/krate-ai:latest
+          sudo echo "Instalado docker"
