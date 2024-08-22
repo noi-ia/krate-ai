@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
  * @author luis.bolivar
  */
 @SpringBootApplication()
-@EnableMongoRepositories
 public class EmotionalApplication {
 
 	/**
