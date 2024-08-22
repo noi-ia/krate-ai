@@ -35,9 +35,11 @@ jobs:
       - name: push image
         env:
           IMAGE_TAG: ${{ github.sha }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
         run: |
-          docker push adminsolia/krate-ai:$IMAGE_TAG
-          echo "image tag:" $IMAGE_TAG
+          docker tag krate-ai:$IMAGE_TAG krate-ai:latest
+          docker push $DOCKER_USER/krate-ai:$IMAGE_TAG
+          echo "image tag: " $IMAGE_TAG
 
       - name: validar la imagen
         id: validate-imae
