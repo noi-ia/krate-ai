@@ -19,49 +19,23 @@ jobs:
       - name: validaciones
         run: |
           java --version
-          echo ${{ secrets.MONGO_DB}}
-          echo ${{ secrets.MONGO_PASS}}
-          echo ${{ secrets.MONGO_USER}}
 
       - name: Build Project
         run: mvn clean install -DskipTests
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          aws-region: 'us-east-1'
-          mongo-db: ${{secrets.MONGO_DB}}
-          mongo-host: ${{secrets.MONGO_HOST}}
-          mongo-port: ${{secrets.MONGO_PORT}}
-          mongo-user: ${{secrets.MONGO_USER}}
-          openai-apikey: ${{secrets.OPENAI_APIKEY}}
-          openai-model: ${{secrets.OPENAI_MODEL}}
-          prompt-clean: ${{secrets.PROMPT_CLEAN}}
-          prompt-emotional: ${{secrets.PROMPT_EMOTIONAL}}
-          prompt-emotional-unique: ${{secrets.PROMPT_EMOTIONAL_UNIQUE}}
-          prompt-keyphrase: ${{secrets.PROMPT_KEYPHRASE}}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          mask-password: 'true'
-
-      - name: build, tag, and push
-        id: build-image
+      - name: login docker hub
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      - name: docker built
+        run: docker build -t krate-ai .
+
+      - name: push image
+        env:
           IMAGE_TAG: ${{ github.sha }}
-          REPOSITORY: krate-ai
-        run: |
-          echo "variable $ECR_REGISTRY"
-          echo "variable $IMAGE_TAG"
-          echo "variable $REPOSITORY"
-          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        run: docker push $DOCKER_USER/krate-ai:$IMAGE_TAG
 
       - name: validar la imagen
         id: validate-imae
