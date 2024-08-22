@@ -30,8 +30,11 @@ jobs:
         run: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
       - name: docker built
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
         run: |
-          docker build -t krate-ai .
+          docker build -t $DOCKER_USER/krate-ai:$IMAGE_TAG .
           docker images
 
       - name: tagging image
@@ -39,7 +42,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
         run: |
-          docker image tag krate-ai:latest krate-ai:$IMAGE_TAG
+          docker image tag krate-ai:$IMAGE_TAG krate-ai:latest
           docker images
 
       - name: push image
