@@ -30,15 +30,20 @@ jobs:
         run: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
       - name: docker built
-        run: | 
+        run: |
           docker build -t krate-ai .
           docker images
 
-      - name: push image
+      - name: tagging image
         env:
           IMAGE_TAG: ${{ github.sha }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        run: docker push $DOCKER_USER/krate-ai:latest
+        run: |
+          docker image tag krate-ai:$IMAGE_TAG krate-ai:latest
+          docker images
+
+      - name: push image
+        run: docker push $DOCKER_USER/krate-ai
 
       - name: validar la imagen
         id: validate-imae
