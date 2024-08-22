@@ -30,7 +30,9 @@ jobs:
         run: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
       - name: docker built
-        run: docker build -t krate-ai .
+        run: | 
+          docker build -t krate-ai .
+          docker images
 
       - name: push image
         env:
