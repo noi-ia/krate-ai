@@ -37,7 +37,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
         run: |
-          docker tag krate-ai:$IMAGE_TAG krate-ai:latest
+          docker image tag krate-ai:$IMAGE_TAG krate-ai:latest
           docker push $DOCKER_USER/krate-ai:$IMAGE_TAG
           echo "image tag: " $IMAGE_TAG
 
